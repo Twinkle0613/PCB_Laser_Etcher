@@ -72,51 +72,57 @@
   <Components path="./"/>
   <LocalComponents/>
   <Files>
-    <File name="HardwareLibrary/HardwareConfig.h" path="src/Hardware/HardwareConfig.h" type="1"/>
-    <File name="HardwareLibrary/Motor.c" path="src/Hardware/Motor.c" type="1"/>
-    <File name="CMSIS/core_cmFunc.h" path="STM_Config/CMSIS/core_cmFunc.h" type="1"/>
-    <File name="Driver/stm32f10x_dma.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_dma.c" type="1"/>
-    <File name="ExecutedLibrary" path="" type="2"/>
+    <File name="ExecutedLibrary/SystemMap.c" path="src/SystemMap.c" type="1"/>
+    <File name="ExecutedLibrary/Planner.h" path="src/Planner.h" type="1"/>
     <File name="HardwareLibrary/Spi.h" path="src/Hardware/Spi.h" type="1"/>
+    <File name="ExecutedLibrary" path="" type="2"/>
     <File name="ExecutedLibrary/Stepper.c" path="src/Stepper.c" type="1"/>
-    <File name="Driver/stm32f10x_gpio.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_gpio.h" type="1"/>
     <File name="Startup/syscalls.c" path="STM_Config/startup/syscalls.c" type="1"/>
-    <File name="Driver/stm32f10x_spi.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_spi.h" type="1"/>
-    <File name="Startup/system_stm32f10x.c" path="STM_Config/startup/system_stm32f10x.c" type="1"/>
-    <File name="Driver/misc.h" path="STM_Config/StdPeriph_Driver/inc/misc.h" type="1"/>
     <File name="Driver/stm32f10x_usart.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_usart.c" type="1"/>
-    <File name="Startup/stm32f10x.h" path="STM_Config/startup/stm32f10x.h" type="1"/>
     <File name="HardwareLibrary/Tim.c" path="src/Hardware/Tim.c" type="1"/>
-    <File name="Startup/stm32f1xx_hal_rcc.h" path="STM_Config/startup/stm32f1xx_hal_rcc.h" type="1"/>
-    <File name="Driver/stm32f10x_tim.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_tim.h" type="1"/>
-    <File name="Startup/startup_stm32f103xb.s" path="STM_Config/startup/startup_stm32f103xb.s" type="1"/>
     <File name="HardwareLibrary/Dma.c" path="src/Hardware/Dma.c" type="1"/>
-    <File name="ExecutedLibrary/Stepper.h" path="src/Stepper.h" type="1"/>
     <File name="CMSIS" path="" type="2"/>
-    <File name="HardwareLibrary/Gpio.c" path="src/Hardware/Gpio.c" type="1"/>
-    <File name="HardwareLibrary/HardwareConfig.c" path="src/Hardware/HardwareConfig.c" type="1"/>
-    <File name="Driver/stm32f10x_tim.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_tim.c" type="1"/>
     <File name="Driver" path="" type="2"/>
+    <File name="HardwareLibrary/HardwareConfig.c" path="src/Hardware/HardwareConfig.c" type="1"/>
     <File name="HardwareLibrary" path="" type="2"/>
     <File name="CMSIS/cmsis_gcc.h" path="STM_Config/CMSIS/cmsis_gcc.h" type="1"/>
     <File name="Driver/stm32f10x_dma.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_dma.h" type="1"/>
     <File name="Driver/stm32f10x_gpio.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_gpio.c" type="1"/>
-    <File name="CMSIS/core_cm3.h" path="STM_Config/CMSIS/core_cm3.h" type="1"/>
     <File name="CMSIS/core_cmSimd.h" path="STM_Config/CMSIS/core_cmSimd.h" type="1"/>
     <File name="Driver/stm32f10x_rcc.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_rcc.c" type="1"/>
-    <File name="HardwareLibrary/Dma.h" path="src/Hardware/Dma.h" type="1"/>
     <File name="Startup/system_stm32f10x.h" path="STM_Config/startup/system_stm32f10x.h" type="1"/>
+    <File name="CMSIS/core_cmInstr.h" path="STM_Config/CMSIS/core_cmInstr.h" type="1"/>
+    <File name="HardwareLibrary/Gpio.h" path="src/Hardware/Gpio.h" type="1"/>
+    <File name="Driver/stm32f10x_usart.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_usart.h" type="1"/>
+    <File name="HardwareLibrary/Spi.c" path="src/Hardware/Spi.c" type="1"/>
+    <File name="HardwareLibrary/HardwareConfig.h" path="src/Hardware/HardwareConfig.h" type="1"/>
+    <File name="HardwareLibrary/Motor.c" path="src/Hardware/Motor.c" type="1"/>
+    <File name="CMSIS/core_cmFunc.h" path="STM_Config/CMSIS/core_cmFunc.h" type="1"/>
+    <File name="Driver/stm32f10x_dma.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_dma.c" type="1"/>
+    <File name="Driver/stm32f10x_gpio.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_gpio.h" type="1"/>
+    <File name="ExecutedLibrary/System.h" path="src/System.h" type="1"/>
+    <File name="Driver/stm32f10x_spi.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_spi.h" type="1"/>
+    <File name="Startup/system_stm32f10x.c" path="STM_Config/startup/system_stm32f10x.c" type="1"/>
+    <File name="Driver/misc.h" path="STM_Config/StdPeriph_Driver/inc/misc.h" type="1"/>
+    <File name="Startup/stm32f10x.h" path="STM_Config/startup/stm32f10x.h" type="1"/>
+    <File name="Startup/stm32f1xx_hal_rcc.h" path="STM_Config/startup/stm32f1xx_hal_rcc.h" type="1"/>
+    <File name="Driver/stm32f10x_tim.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_tim.h" type="1"/>
+    <File name="Startup/startup_stm32f103xb.s" path="STM_Config/startup/startup_stm32f103xb.s" type="1"/>
+    <File name="ExecutedLibrary/Stepper.h" path="src/Stepper.h" type="1"/>
+    <File name="HardwareLibrary/Gpio.c" path="src/Hardware/Gpio.c" type="1"/>
+    <File name="Driver/stm32f10x_tim.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_tim.c" type="1"/>
+    <File name="ExecutedLibrary/SystemMap.h" path="src/SystemMap.h" type="1"/>
+    <File name="ExecutedLibrary/Planner.c" path="src/Planner.c" type="1"/>
+    <File name="CMSIS/core_cm3.h" path="STM_Config/CMSIS/core_cm3.h" type="1"/>
+    <File name="HardwareLibrary/Dma.h" path="src/Hardware/Dma.h" type="1"/>
     <File name="HardwareLibrary/Motor.h" path="src/Hardware/Motor.h" type="1"/>
     <File name="HardwareLibrary/Tim.h" path="src/Hardware/Tim.h" type="1"/>
-    <File name="Startup/stm32f103xb.h" path="STM_Config/startup/stm32f103xb.h" type="1"/>
     <File name="Startup" path="" type="2"/>
-    <File name="CMSIS/core_cmInstr.h" path="STM_Config/CMSIS/core_cmInstr.h" type="1"/>
+    <File name="Startup/stm32f103xb.h" path="STM_Config/startup/stm32f103xb.h" type="1"/>
+    <File name="ExecutedLibrary/System.c" path="src/System.c" type="1"/>
     <File name="Driver/stm32f10x_spi.c" path="STM_Config/StdPeriph_Driver/src/stm32f10x_spi.c" type="1"/>
     <File name="Driver/misc.c" path="STM_Config/StdPeriph_Driver/src/misc.c" type="1"/>
-    <File name="Driver/stm32f10x_usart.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_usart.h" type="1"/>
     <File name="Driver/stm32f10x_rcc.h" path="STM_Config/StdPeriph_Driver/inc/stm32f10x_rcc.h" type="1"/>
-    <File name="HardwareLibrary/Gpio.h" path="src/Hardware/Gpio.h" type="1"/>
-    <File name="HardwareLibrary/Spi.c" path="src/Hardware/Spi.c" type="1"/>
     <File name="main.c" path="app/main.c" type="1"/>
   </Files>
   <Bookmarks/>

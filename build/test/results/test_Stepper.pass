@@ -75,12 +75,98 @@
 - :test: test_TIM2_IRQHandler_and_executeStepDisplacementProcess_simulate_when_TIM_interrupt_occur
   :line: 568
   :message: ''
+- :test: test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest
+  :line: 588
+  :message: ''
+- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest
+  :line: 598
+  :message: ''
+- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest
+  :line: 608
+  :message: ''
+- :test: test_motorRateControlProcess_when_motor_moving_step_is_finish_the_current_block_will_be_discarded
+  :line: 620
+  :message: ''
+- :test: test_setTickPerStepEventToTimer_if_cycle_15000000_the_actual_cycle_is_58593_and_prescale_is_256
+  :line: 633
+  :message: ''
+- :test: test_setTickPerStepEventToTimer_if_cycle_72000000_the_actual_cycle_is_35156_and_prescale_is_2047
+  :line: 639
+  :message: ''
+- :test: test_setTickPerStepEventToTimer_if_cycle_50000_the_actual_cycle_is_50000_and_prescale_is_0
+  :line: 645
+  :message: ''
+- :test: test_setTickPerStepEventToTimer_if_cycle_1_the_actual_cycle_is_1_and_prescale_is_0
+  :line: 651
+  :message: ''
+- :test: test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000
+  :line: 657
+  :message: ''
+- :test: test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800
+  :line: 664
+  :message: ''
+- :test: test_iterateCycleCounter_stepsPerMin_is_80000
+  :line: 672
+  :message: ''
+- :test: test_iterateCycleCounter_stepsPerMin_is_100
+  :line: 688
+  :message: ''
 :failures: []
 :ignores: []
 :counts:
-  :total: 24
-  :passed: 24
+  :total: 36
+  :passed: 36
   :failed: 0
   :ignored: 0
 :stdout:
+- " stExecutor.cyclePerStepCounter = 54000"
+- " stExecutor.cyclePerStepCounter = 108000"
+- " stExecutor.cyclePerStepCounter = 162000"
+- " stExecutor.cyclePerStepCounter = 216000"
+- " stExecutor.cyclePerStepCounter = 270000"
+- " stExecutor.cyclePerStepCounter = 324000"
+- " stExecutor.cyclePerStepCounter = 378000"
+- " stExecutor.cyclePerStepCounter = 432000"
+- " stExecutor.cyclePerStepCounter = 486000"
+- " stExecutor.cyclePerStepCounter = 540000"
+- " stExecutor.cyclePerStepCounter = 594000"
+- " stExecutor.cyclePerStepCounter = 648000"
+- " stExecutor.cyclePerStepCounter = 702000"
+- " stExecutor.cyclePerStepCounter = 756000"
+- " stExecutor.cyclePerStepCounter = 42187"
+- " stExecutor.cyclePerStepCounter = 84374"
+- " stExecutor.cyclePerStepCounter = 126561"
+- " stExecutor.cyclePerStepCounter = 168748"
+- " stExecutor.cyclePerStepCounter = 210935"
+- " stExecutor.cyclePerStepCounter = 253122"
+- " stExecutor.cyclePerStepCounter = 295309"
+- " stExecutor.cyclePerStepCounter = 337496"
+- " stExecutor.cyclePerStepCounter = 379683"
+- " stExecutor.cyclePerStepCounter = 421870"
+- " stExecutor.cyclePerStepCounter = 464057"
+- " stExecutor.cyclePerStepCounter = 506244"
+- " stExecutor.cyclePerStepCounter = 548431"
+- " stExecutor.cyclePerStepCounter = 590618"
+- " stExecutor.cyclePerStepCounter = 632805"
+- " stExecutor.cyclePerStepCounter = 674992"
+- " stExecutor.cyclePerStepCounter = 717179"
+- " stExecutor.cyclePerStepCounter = 759366"
+- " stExecutor.cyclePerStepCounter = 51553"
+- " stExecutor.cyclePerStepCounter = 93740"
+- " stExecutor.cyclePerStepCounter = 135927"
+- " stExecutor.cyclePerStepCounter = 178114"
+- " stExecutor.cyclePerStepCounter = 220301"
+- " stExecutor.cyclePerStepCounter = 262488"
+- " stExecutor.cyclePerStepCounter = 304675"
+- " stExecutor.cyclePerStepCounter = 346862"
+- " stExecutor.cyclePerStepCounter = 389049"
+- " stExecutor.cyclePerStepCounter = 431236"
+- " stExecutor.cyclePerStepCounter = 473423"
+- " stExecutor.cyclePerStepCounter = 515610"
+- " stExecutor.cyclePerStepCounter = 557797"
+- " stExecutor.cyclePerStepCounter = 599984"
+- " stExecutor.cyclePerStepCounter = 642171"
+- " stExecutor.cyclePerStepCounter = 684358"
+- " stExecutor.cyclePerStepCounter = 726545"
+- " stExecutor.cyclePerStepCounter = 768732"
 - ''

@@ -916,3 +916,249 @@ void test_TIM2_IRQHandler_and_executeStepDisplacementProcess_simulate_when_TIM_i
 
 
 }
+
+
+
+
+
+void test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest(void){
+
+   bufferHead = nextBlockIndex(bufferHead);
+
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10);
+
+   UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((blockBuffer[bufferTail].stepEventCount)), (((void *)0)), (_U_UINT)(591), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((0x00)), (_U_SINT)((blockBuffer[bufferTail].directionBits)), (((void *)0)), (_U_UINT)(592), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((blockBuffer[bufferTail].steps[0])), (((void *)0)), (_U_UINT)(593), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((75)), (_U_SINT)((blockBuffer[bufferTail].steps[1])), (((void *)0)), (_U_UINT)(594), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((10)), (_U_SINT)((blockBuffer[bufferTail].steps[2])), (((void *)0)), (_U_UINT)(595), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest(void){
+
+   bufferHead = nextBlockIndex(bufferHead);
+
+   blockConfig(&blockBuffer[bufferTail],0x00,100,300,200);
+
+   UnityAssertEqualNumber((_U_SINT)((300)), (_U_SINT)((blockBuffer[bufferTail].stepEventCount)), (((void *)0)), (_U_UINT)(601), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((0x00)), (_U_SINT)((blockBuffer[bufferTail].directionBits)), (((void *)0)), (_U_UINT)(602), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((blockBuffer[bufferTail].steps[0])), (((void *)0)), (_U_UINT)(603), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((300)), (_U_SINT)((blockBuffer[bufferTail].steps[1])), (((void *)0)), (_U_UINT)(604), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((200)), (_U_SINT)((blockBuffer[bufferTail].steps[2])), (((void *)0)), (_U_UINT)(605), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest(void){
+
+   bufferHead = nextBlockIndex(bufferHead);
+
+   blockConfig(&blockBuffer[bufferTail],0x00,100,300,1000);
+
+   UnityAssertEqualNumber((_U_SINT)((1000)), (_U_SINT)((blockBuffer[bufferTail].stepEventCount)), (((void *)0)), (_U_UINT)(611), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((0x00)), (_U_SINT)((blockBuffer[bufferTail].directionBits)), (((void *)0)), (_U_UINT)(612), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((blockBuffer[bufferTail].steps[0])), (((void *)0)), (_U_UINT)(613), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((300)), (_U_SINT)((blockBuffer[bufferTail].steps[1])), (((void *)0)), (_U_UINT)(614), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((1000)), (_U_SINT)((blockBuffer[bufferTail].steps[2])), (((void *)0)), (_U_UINT)(615), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+
+
+
+
+void test_motorRateControlProcess_when_motor_moving_step_is_finish_the_current_block_will_be_discarded(void){
+
+    bufferHead = nextBlockIndex(bufferHead);
+
+    blockConfig(&blockBuffer[bufferTail],0x00,100,75,10);
+
+    stExecutorInitProcess();
+
+    stExecutor.stepEventsCompleted = currentBlock->stepEventCount;
+
+    motorRateControlProcess();
+
+    if ((((currentBlock)) == ((void *)0))) {} else {UnityFail( (((" Expected NULL"))), (_U_UINT)((_U_UINT)((_U_UINT)(626))));};
+
+    UnityAssertEqualNumber((_U_SINT)((bufferHead)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(627), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+
+
+
+
+
+
+void test_setTickPerStepEventToTimer_if_cycle_15000000_the_actual_cycle_is_58593_and_prescale_is_256(void){
+
+ UnityAssertEqualNumber((_U_SINT)((58593)), (_U_SINT)((setCyclePerStepEventToTimer(15000000))), (((void *)0)), (_U_UINT)(634), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((58592)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->CNT)), (((void *)0)), (_U_UINT)(635), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((255)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->ARR)), (((void *)0)), (_U_UINT)(636), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_setTickPerStepEventToTimer_if_cycle_72000000_the_actual_cycle_is_35156_and_prescale_is_2047(void){
+
+ UnityAssertEqualNumber((_U_SINT)((35156)), (_U_SINT)((setCyclePerStepEventToTimer(72000000))), (((void *)0)), (_U_UINT)(640), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((35155)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->CNT)), (((void *)0)), (_U_UINT)(641), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((2047)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->ARR)), (((void *)0)), (_U_UINT)(642), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_setTickPerStepEventToTimer_if_cycle_50000_the_actual_cycle_is_50000_and_prescale_is_0(void){
+
+ UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((setCyclePerStepEventToTimer(50000))), (((void *)0)), (_U_UINT)(646), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((49999)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->CNT)), (((void *)0)), (_U_UINT)(647), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->ARR)), (((void *)0)), (_U_UINT)(648), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_setTickPerStepEventToTimer_if_cycle_1_the_actual_cycle_is_1_and_prescale_is_0(void){
+
+ UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((setCyclePerStepEventToTimer(1))), (((void *)0)), (_U_UINT)(652), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->CNT)), (((void *)0)), (_U_UINT)(653), UNITY_DISPLAY_STYLE_INT);
+
+ UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->ARR)), (((void *)0)), (_U_UINT)(654), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000(void){
+
+  setStepEventPerMin(80000);
+
+  UnityAssertEqualNumber((_U_SINT)((54000)), (_U_SINT)((stExecutor.cyclePerStepEvent)), (((void *)0)), (_U_UINT)(659), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((53999)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->CNT)), (((void *)0)), (_U_UINT)(660), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->ARR)), (((void *)0)), (_U_UINT)(661), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800(void){
+
+  setStepEventPerMin(100);
+
+  UnityAssertEqualNumber((_U_SINT)((42187)), (_U_SINT)((stExecutor.cyclePerStepEvent)), (((void *)0)), (_U_UINT)(666), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((42186)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->CNT)), (((void *)0)), (_U_UINT)(667), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((127)), (_U_SINT)((((TIM_TypeDef*) ((uint32_t)HostTim2))->ARR)), (((void *)0)), (_U_UINT)(668), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+
+
+void test_iterateCycleCounter_stepsPerMin_is_80000(void){
+
+   uint32_t stepsPerMin = 80000;
+
+   setStepEventPerMin(stepsPerMin);
+
+   uint32_t cyclePerStepEvent = stExecutor.cyclePerStepEvent;
+
+   int limit = (72000000/(((10*60*60*80)/60)/500))/cyclePerStepEvent;
+
+   stExecutor.cyclePerStepCounter = 0;
+
+   UnityAssertEqualNumber((_U_SINT)((54000)), (_U_SINT)((stExecutor.cyclePerStepEvent)), (((void *)0)), (_U_UINT)(678), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((750000)), (_U_SINT)(((72000000/(((10*60*60*80)/60)/500)))), (((void *)0)), (_U_UINT)(679), UNITY_DISPLAY_STYLE_INT);
+
+   int i = 0;
+
+   for(i = 0; i < limit ; i++){
+
+    UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((iterateCycleCounter())), (((void *)0)), (_U_UINT)(682), UNITY_DISPLAY_STYLE_INT);
+
+   }
+
+   UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((iterateCycleCounter())), (((void *)0)), (_U_UINT)(684), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((6000)), (_U_SINT)((stExecutor.cyclePerStepCounter)), (((void *)0)), (_U_UINT)(685), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_iterateCycleCounter_stepsPerMin_is_100(void){
+
+   uint32_t stepsPerMin = 100;
+
+   setStepEventPerMin(stepsPerMin);
+
+   uint32_t cyclePerStepEvent = stExecutor.cyclePerStepEvent;
+
+   int limit = (72000000/(((10*60*60*80)/60)/500))/cyclePerStepEvent;
+
+   stExecutor.cyclePerStepCounter = 0;
+
+   UnityAssertEqualNumber((_U_SINT)((42187)), (_U_SINT)((stExecutor.cyclePerStepEvent)), (((void *)0)), (_U_UINT)(694), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((750000)), (_U_SINT)(((72000000/(((10*60*60*80)/60)/500)))), (((void *)0)), (_U_UINT)(695), UNITY_DISPLAY_STYLE_INT);
+
+   int i = 0;
+
+   for(i = 0; i < limit ; i++){
+
+    UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((iterateCycleCounter())), (((void *)0)), (_U_UINT)(698), UNITY_DISPLAY_STYLE_INT);
+
+   }
+
+   UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((iterateCycleCounter())), (((void *)0)), (_U_UINT)(700), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((9366)), (_U_SINT)((stExecutor.cyclePerStepCounter)), (((void *)0)), (_U_UINT)(701), UNITY_DISPLAY_STYLE_INT);
+
+
+
+   for(i = 0; i < limit ; i++){
+
+    UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((iterateCycleCounter())), (((void *)0)), (_U_UINT)(704), UNITY_DISPLAY_STYLE_INT);
+
+   }
+
+   UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((iterateCycleCounter())), (((void *)0)), (_U_UINT)(706), UNITY_DISPLAY_STYLE_INT);
+
+   UnityAssertEqualNumber((_U_SINT)((18732)), (_U_SINT)((stExecutor.cyclePerStepCounter)), (((void *)0)), (_U_UINT)(707), UNITY_DISPLAY_STYLE_INT);
+
+}

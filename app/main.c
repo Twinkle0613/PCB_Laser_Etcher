@@ -21,12 +21,18 @@ void spiInit(void);
 void gpioInit(void);
 void motorInit(void);
 void motorDriveBufferInit(void);
+void motorInfoBufferInit(void);
 
 MotorInfo* motor2;
 MotorInfo* motor1;
 MotorInfo* motor0;
 
 uint32_t signal;
+void delay(int counter)
+{
+    int i;
+    for (i = 0; i < counter * 10000; i++) {}
+}
 
 int main(void)
 {
@@ -35,9 +41,9 @@ int main(void)
 	spiInit();
 	dmaInit();
 	motorInit();
+	motorInfoBufferInit();
 	motorDriveBufferInit();
-
-	//timInit();
+	timInit();
 
 	while(1)
     {
@@ -45,16 +51,13 @@ int main(void)
     }
 }
 
-void motorInit(void){
-	motor0  = motorConfig(Motor_Anti_Clockwise,MOTOR_FULL_STEP);
-	motor1  = motorConfig(Motor_Clockwise,MOTOR_FULL_STEP);
-	motor2  = motorConfig(Motor_Anti_Clockwise,MOTOR_FULL_STEP);
-	motorInfoBuffer[X_MOTOR_RESET] = getMotorInfo(motor0,Motor_Left,Motor_Step_Low);
-	motorInfoBuffer[Y_MOTOR_RESET] = getMotorInfo(motor1,Motor_Left,Motor_Step_Low);
-	motorInfoBuffer[Z_MOTOR_RESET] = getMotorInfo(motor2,Motor_Left,Motor_Step_Low);
-	motorInfoBuffer[X_MOTOR_SET] = getMotorInfo(motor0,Motor_Left,Motor_Step_High);
-	motorInfoBuffer[Y_MOTOR_SET] = getMotorInfo(motor1,Motor_Left,Motor_Step_High);
-	motorInfoBuffer[Z_MOTOR_SET] = getMotorInfo(motor2,Motor_Left,Motor_Step_High);
+void motorInfoBufferInit(void){
+	motorInfoBuffer[X_MOTOR_RESET] = getMotorInfo(motor0,MOTOR_LEFT,MOTOR_STEP_LOW);
+	motorInfoBuffer[Y_MOTOR_RESET] = getMotorInfo(motor1,MOTOR_LEFT,MOTOR_STEP_LOW);
+	motorInfoBuffer[Z_MOTOR_RESET] = getMotorInfo(motor2,MOTOR_LEFT,MOTOR_STEP_LOW);
+	motorInfoBuffer[X_MOTOR_SET] = getMotorInfo(motor0,MOTOR_LEFT,MOTOR_STEP_HIGH);
+	motorInfoBuffer[Y_MOTOR_SET] = getMotorInfo(motor1,MOTOR_LEFT,MOTOR_STEP_HIGH);
+	motorInfoBuffer[Z_MOTOR_SET] = getMotorInfo(motor2,MOTOR_LEFT,MOTOR_STEP_HIGH);
 }
 
 void motorDriveBufferInit(void){
@@ -69,7 +72,7 @@ void dmaInit(void){
 }
 
 void timInit(void){
-	TimerConfig(TIM2,1500,TIM_CounterMode_Up,480,0);
+	TimerConfig(TIM2,1500,TIM_CounterMode_Up,24000,0);
 	TIM_Cmd(TIM2,ENABLE);
 }
 

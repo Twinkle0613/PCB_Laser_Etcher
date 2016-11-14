@@ -19,6 +19,11 @@ typedef struct{
   uint32_t steps[N_AXIS]; // It is equal to delta Y in bresenham's algoritm        
   uint32_t stepEventsCompleted;  // The number of step events left in current motion
   uint8_t xyzDireation;
+  
+  uint32_t currentRate;
+  uint32_t cyclePerStepEvent;
+  uint32_t cyclePerStepCounter;
+  
 }stepper_t;
 
 extern stepper_t stExecutor;

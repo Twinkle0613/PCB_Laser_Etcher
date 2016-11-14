@@ -6,15 +6,107 @@ block_t *currentBlock;
 uint8_t wakeUpState;
 uint8_t outputBits; 
 
+#define max(a,b) ((a<b)?b:a)
+#define min(a,b) ((a>b)?a:b)
+
 void TIM2_IRQHandler(void){
-	TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
-	triggerOutputData();
-  stExecutorInitProcess();
-  if(currentBlock != NULL){
-   executeStepDisplacementProcess();
-  }
-	
+  TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
+ // static int i;
+ // if(i = (~i)){
+   // GPIO_SetBits(GPIOC, GPIO_Pin_13); // LED ON
+ // }else{
+   // GPIO_ResetBits(GPIOC, GPIO_Pin_13); // LED OFF
+ // }
+
+ 	triggerOutputData();
+ stExecutorInitProcess();
+ if(currentBlock != NULL){
+  executeStepDisplacementProcess();
+ }
+ sendResetStep();
 }
+
+
+void motorRateControlProcess(void){
+  
+  if(stExecutor.stepEventsCompleted < stExecutor.eventCount){
+    
+  }else{
+    discardCurrentBlock();
+    currentBlock = NULL;
+  }
+  
+}
+
+#define IsStillAccelerate (stExecutor.stepEventsCompleted < currentBlock->accelerateUntil)
+#define IsStillDeccelerate (stExecutor.stepEventsCompleted > currentBlock->deccelerateAfter)
+
+void accelerateAndDeccelerateEvent(void){
+  if(IsStillAccelerate){
+    //accelerateRate();
+  }else if(IsStillDeccelerate){
+    //deccelerateRate();
+  }else{
+    //nominalRate();
+  }
+}
+
+uint32_t setCyclePerStepEventToTimer(uint32_t cycle){
+   uint16_t prescale = 1;
+   uint32_t actualCycle;
+  while(cycle > 0xffff){
+    cycle >>= 1;
+    prescale *= 2;
+  }
+  actualCycle = cycle;
+  if(cycle != 1){
+    cycle -= 1;
+  }
+  TIM_SetCounter(TIM2,cycle);
+  TIM_SetAutoreload(TIM2,prescale-1);
+  return actualCycle;
+}
+
+void setStepEventPerMin(uint32_t stepsPerMin){
+    
+  if(stepsPerMin < MINIMUM_STEPS_PER_MINUTE){
+    stepsPerMin = MINIMUM_STEPS_PER_MINUTE;
+  }
+  stExecutor.cyclePerStepEvent = setCyclePerStepEventToTimer((TIMER_FREQUENCY/stepsPerMin)*60);
+}
+
+
+int iterateCycleCounter(){
+  stExecutor.cyclePerStepCounter += stExecutor.cyclePerStepEvent;
+  printf(" stExecutor.cyclePerStepCounter = %d\n",stExecutor.cyclePerStepCounter);
+  if(stExecutor.cyclePerStepCounter > CYCLES_PER_ACCELERATION_TICK){
+    stExecutor.cyclePerStepCounter -= CYCLES_PER_ACCELERATION_TICK;
+    return true;
+  }else{
+    return false;
+  }
+  
+  
+}
+
+void accelerateRate(void){
+  
+  
+  
+}
+
+void deccelerateRate(void){
+  
+  
+  
+}
+
+void nominalRate(void){
+  
+  
+  
+}
+
 
 void stepperInit(void){ 
   currentBlock = NULL;
@@ -31,8 +123,6 @@ void wakeUp(void){
   wakeUpState = 1;
 }
 
-
-
 void transferInfoToStExecutor(block_t* block){
   stExecutor.steps[X_AXIS] = block->steps[X_AXIS];
   stExecutor.steps[Y_AXIS] = block->steps[Y_AXIS];
@@ -45,8 +135,6 @@ void transferInfoToStExecutor(block_t* block){
   stExecutor.stepEventsCompleted = 0;
   
 }
-
-
 
 void stExecutorInitProcess(void){
 
@@ -125,6 +213,7 @@ uint8_t executeStepDisplacement(int axis){
   return output;
 }
 
+// For testing purpose
 uint32_t bresenhamAlgorithm(int32_t* error,uint32_t dx,uint32_t dy, int* status){
   int increment = 0;
   *error += dy;
@@ -180,5 +269,16 @@ int getDireationFlag(uint8_t reg,int axis){
   }
   return getStatus(reg,dir);
 }
+
+// For testing purpose
+void blockConfig(block_t* block,uint8_t dir,uint32_t stepX, uint32_t stepY, uint32_t stepZ){
+    block->stepEventCount = max(stepX,max(stepY,stepZ));
+    block->directionBits = dir;
+    block->steps[X_AXIS] = stepX;
+    block->steps[Y_AXIS] = stepY;
+    block->steps[Z_AXIS] = stepZ;
+}
+
+
 
 

@@ -6,7 +6,7 @@ MotorInfo* motor0;
 
 
 void motorInit(void){
-  motorX  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);
+    motorX  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);
 	motorY  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);
 	motorZ  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);  
 }

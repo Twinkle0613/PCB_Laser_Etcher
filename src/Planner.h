@@ -17,9 +17,21 @@ typedef struct{
 planner_t plExecutor;
 
 typedef struct {
+   // Fields used by the bresenham algorithm for tracing the line
    uint8_t directionBits;   
    uint32_t steps[N_AXIS];
    int32_t  stepEventCount; 
+   
+   // Fields used by the motion planner to manage acceleration
+   
+   // Settings for the trapezoid generator
+   uint32_t initialRate;              // The step rate at start of block  
+   uint32_t finalRate;                // The step rate at end of block
+   int32_t rateDelta;                 // The steps/minute to add or subtract when changing speed (must be positive)
+   uint32_t accelerateUntil;          // The index of the step event on which to stop acceleration
+   uint32_t deccelerateAfter;          // The index of the step event on which to start decelerating
+   uint32_t nominalRate;              // The nominal step rate for this block in step_events/minute
+   
 }block_t;
 
 extern volatile uint8_t bufferHead;       // Index of the next block to be pushed
