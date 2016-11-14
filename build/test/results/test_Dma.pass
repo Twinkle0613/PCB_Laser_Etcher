@@ -1,0 +1,20 @@
+---
+:source:
+  :path: test
+  :file: test_Dma.c
+:successes:
+- :test: test_sendSetStep_send_the_Execute_instruction_to_the_motorDriveBuffer
+  :line: 55
+  :message: ''
+- :test: test_sendResetStep_send_the_Execute_instruction_to_the_motorDriveBuffer
+  :line: 67
+  :message: ''
+:failures: []
+:ignores: []
+:counts:
+  :total: 2
+  :passed: 2
+  :failed: 0
+  :ignored: 0
+:stdout:
+- ''

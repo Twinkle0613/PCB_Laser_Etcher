@@ -1,0 +1,41 @@
+---
+:source:
+  :path: test
+  :file: test_Planner.c
+:successes:
+- :test: test_nextBlockIndex_Index_point_to_next_block
+  :line: 23
+  :message: ''
+- :test: test_nextBlockIndex_Index_point_to_next_block_with_overflow
+  :line: 38
+  :message: ''
+- :test: test_prevBlockIndex_Index_point_to_previous_block
+  :line: 52
+  :message: ''
+- :test: test_prevBlockIndex_Index_point_to_previous_block_with_underflow
+  :line: 65
+  :message: ''
+- :test: test_planInit_initialize_the_bufferHead_bufferTail_and_nextBufferHead
+  :line: 80
+  :message: ''
+- :test: test_getBlock_to_get_the_block_when_buffer_contained_block
+  :line: 102
+  :message: ''
+- :test: test_getBlock_to_get_NULL_when_buffer_dont_have_any_block
+  :line: 119
+  :message: ''
+- :test: test_discardCurrrentBlock_if_blockBuffer_contain_block_the_buffetTail_will_be_increased
+  :line: 134
+  :message: ''
+- :test: test_discardCurrrentBlock_if_blockBuffer_doesnt_contain_block_the_buffetTail_will_remain
+  :line: 151
+  :message: ''
+:failures: []
+:ignores: []
+:counts:
+  :total: 9
+  :passed: 9
+  :failed: 0
+  :ignored: 0
+:stdout:
+- ''

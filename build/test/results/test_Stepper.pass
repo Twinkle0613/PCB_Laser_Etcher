@@ -1,0 +1,86 @@
+---
+:source:
+  :path: test
+  :file: test_Stepper.c
+:successes:
+- :test: test_TIM2_IRQHandler_the_function_is_called_by_CPU
+  :line: 80
+  :message: ''
+- :test: test_initStepper_reset_and_initilize_all_of_the_data
+  :line: 94
+  :message: ''
+- :test: test_sleep_the_timer_interrupt_is_disable
+  :line: 107
+  :message: ''
+- :test: test_wakeup_the_timer_interrupt_is_enabled
+  :line: 112
+  :message: ''
+- :test: test_TIM2_IRQHandler_IRQ_to_request_block_when_buffer_block_didnt_contain_any_block
+  :line: 128
+  :message: ''
+- :test: test_TIM2_IRQHandler_IRQ_to_request_block_when_buffer_block_contain_blocks
+  :line: 143
+  :message: ''
+- :test: test_TIM2_IRQHandler_no_more_block_for_IRQ_to_request_and_IRQ_will_go_to_sleep
+  :line: 161
+  :message: ''
+- :test: test_transferInfoToStExecutor_when_IRQ_successfully_get_a_block_and_transfer_info_to_st_executor_from_block
+  :line: 168
+  :message: ''
+- :test: test_TIM2_IRQHandler_get_block_from_block_buffer_and_transfer_block_info_into_st_executor
+  :line: 198
+  :message: ''
+- :test: test_bresenhamAlgorithm_when_dx_is_10_and_dy_is_10_
+  :line: 234
+  :message: ''
+- :test: test_bresenhamAlgorithm_when_dx_is_20_and_dy_is_15_
+  :line: 268
+  :message: ''
+- :test: test_executeStepDisplament_XYZ_direations_are_positive_
+  :line: 304
+  :message: ''
+- :test: test_executeStepDisplament_XYZ_direations_are_negative_
+  :line: 360
+  :message: ''
+- :test: test_executeStepDisplacementProcess_the_functon_is_called_and_using_for_loop
+  :line: 403
+  :message: ''
+- :test: test_getStepStatus_when_x_y_z_rest
+  :line: 446
+  :message: ''
+- :test: test_getStepStatus_when_x_y_z_move_
+  :line: 453
+  :message: ''
+- :test: test_getMoveDireaction_when_x_y_z_are_moving_right_direation
+  :line: 460
+  :message: ''
+- :test: test_getMoveDireaction_when_x_y_z_are_moving_left_direation
+  :line: 467
+  :message: ''
+- :test: test_planningDataSending_XYZ_direations_are_negative_
+  :line: 474
+  :message: ''
+- :test: test_planningDataSending_XYZ_direations_are_positive_
+  :line: 485
+  :message: ''
+- :test: test_planningDataSending_XYZ_motor_take_a_rest_
+  :line: 496
+  :message: ''
+- :test: test_executeStepDisplacementProcess_planningDataSending_the_functon_is_called_and_using_for_loop
+  :line: 510
+  :message: ''
+- :test: test_executeStepDisplacementProcess_planningDataSending_sendResetStep_the_functon_is_called_and_using_for_loop
+  :line: 542
+  :message: ''
+- :test: test_TIM2_IRQHandler_and_executeStepDisplacementProcess_simulate_when_TIM_interrupt_occur
+  :line: 568
+  :message: ''
+:failures: []
+:ignores: []
+:counts:
+  :total: 24
+  :passed: 24
+  :failed: 0
+  :ignored: 0
+:stdout:
+- ''
