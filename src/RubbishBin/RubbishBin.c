@@ -100,3 +100,16 @@ void updateMotorDriveBuffer(int state){
   
   
   //printf("motorInfoBuffer[Y_MOTOR_RESET] = %d, motorInfoBuffer[Y_MOTOR_SET] = %d\n",motorInfoBuffer[Y_MOTOR_RESET],motorInfoBuffer[Y_MOTOR_SET]);
+  
+  
+   // static int i;
+ // if(i = (~i)){
+   // GPIO_SetBits(GPIOC, GPIO_Pin_13); // LED ON
+ // }else{
+   // GPIO_ResetBits(GPIOC, GPIO_Pin_13); // LED OFF
+ // }
+ 
+ 
+ 
+ 
+  

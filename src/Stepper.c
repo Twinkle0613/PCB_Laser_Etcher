@@ -8,50 +8,46 @@ uint8_t outputBits;
 
 #define max(a,b) ((a<b)?b:a)
 #define min(a,b) ((a>b)?a:b)
+#define isLessThanAccelerateSteps (stExecutor.stepEventsCompleted < currentBlock->accelerateUntil)
+#define isMoreThanDeccelerateSteps (stExecutor.stepEventsCompleted >= currentBlock->deccelerateAfter)
+#define isEqualToDeccelerateSteps (stExecutor.stepEventsCompleted == currentBlock->deccelerateAfter)
 
 void TIM2_IRQHandler(void){
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
- // static int i;
- // if(i = (~i)){
-   // GPIO_SetBits(GPIOC, GPIO_Pin_13); // LED ON
- // }else{
-   // GPIO_ResetBits(GPIOC, GPIO_Pin_13); // LED OFF
- // }
-
  	triggerOutputData();
- stExecutorInitProcess();
+  stExecutorInitProcess();
  if(currentBlock != NULL){
   executeStepDisplacementProcess();
+  motorRateControlProcess();
  }
- sendResetStep();
+ //sendResetStep();
 }
 
 
 void motorRateControlProcess(void){
   
   if(stExecutor.stepEventsCompleted < stExecutor.eventCount){
-    
+    accelerateAndDeccelerateEvent();
   }else{
-    discardCurrentBlock();
     currentBlock = NULL;
+    discardCurrentBlock();
   }
   
 }
 
-#define IsStillAccelerate (stExecutor.stepEventsCompleted < currentBlock->accelerateUntil)
-#define IsStillDeccelerate (stExecutor.stepEventsCompleted > currentBlock->deccelerateAfter)
 
 void accelerateAndDeccelerateEvent(void){
-  if(IsStillAccelerate){
-    //accelerateRate();
-  }else if(IsStillDeccelerate){
-    //deccelerateRate();
+  if(isLessThanAccelerateSteps){
+    accelerateRate();
+  }else if(isMoreThanDeccelerateSteps){
+    deccelerateRate();
   }else{
-    //nominalRate();
+    nominalRate();
   }
 }
 
 uint32_t setCyclePerStepEventToTimer(uint32_t cycle){
+  // printf("cycle = %d\n",cycle);
    uint16_t prescale = 1;
    uint32_t actualCycle;
   while(cycle > 0xffff){
@@ -68,7 +64,7 @@ uint32_t setCyclePerStepEventToTimer(uint32_t cycle){
 }
 
 void setStepEventPerMin(uint32_t stepsPerMin){
-    
+   //printf("stepsPerMin = %d\n",stepsPerMin);
   if(stepsPerMin < MINIMUM_STEPS_PER_MINUTE){
     stepsPerMin = MINIMUM_STEPS_PER_MINUTE;
   }
@@ -76,35 +72,64 @@ void setStepEventPerMin(uint32_t stepsPerMin){
 }
 
 
-int iterateCycleCounter(){
+int iterateCycleCounter(void){
   stExecutor.cyclePerStepCounter += stExecutor.cyclePerStepEvent;
-  printf(" stExecutor.cyclePerStepCounter = %d\n",stExecutor.cyclePerStepCounter);
   if(stExecutor.cyclePerStepCounter > CYCLES_PER_ACCELERATION_TICK){
     stExecutor.cyclePerStepCounter -= CYCLES_PER_ACCELERATION_TICK;
     return true;
   }else{
     return false;
   }
-  
-  
 }
 
 void accelerateRate(void){
-  
-  
-  
+  if(iterateCycleCounter()){
+    stExecutor.currentRate += INCREMENT_RESOLUTION;
+    if(stExecutor.currentRate >= currentBlock->nominalRate){
+      stExecutor.currentRate = currentBlock->nominalRate;
+    }
+    setStepEventPerMin(stExecutor.currentRate);
+  }
 }
 
 void deccelerateRate(void){
-  
-  
+  if(isEqualToDeccelerateSteps){
+   // printf("stExecutor.stepEventsCompleted = %d\n",stExecutor.stepEventsCompleted); 
+    initializeDecceleration();
+  }else{
+    deccelerationAbjustment();
+  }  
+}
+
+void initializeDecceleration(void){
+ if(stExecutor.currentRate == currentBlock->nominalRate){
+  stExecutor.cyclePerStepCounter = 0;
+ }else{
+   stExecutor.cyclePerStepCounter = CYCLES_PER_ACCELERATION_TICK - stExecutor.cyclePerStepCounter;
+ }
   
 }
 
+void deccelerationAbjustment(void){
+ if(iterateCycleCounter()){
+  if(stExecutor.currentRate > stExecutor.minSafeRate){
+    stExecutor.currentRate -= INCREMENT_RESOLUTION;    
+  }else{
+    stExecutor.currentRate >>= 1;
+  }  
+  if(stExecutor.currentRate < currentBlock->finalRate){
+    stExecutor.currentRate = currentBlock->finalRate;
+  }
+  setStepEventPerMin(stExecutor.currentRate);
+ }
+}
+
+
 void nominalRate(void){
-  
-  
-  
+  if(stExecutor.currentRate != currentBlock->nominalRate){
+      stExecutor.currentRate = currentBlock->nominalRate;
+      setStepEventPerMin(stExecutor.currentRate);
+  }
 }
 
 
@@ -124,6 +149,11 @@ void wakeUp(void){
 }
 
 void transferInfoToStExecutor(block_t* block){
+  
+  stExecutor.currentRate = block->initialRate;
+  setStepEventPerMin(stExecutor.currentRate);
+  stExecutor.cyclePerStepCounter = 0;
+  stExecutor.minSafeRate = INCREMENT_RESOLUTION + (INCREMENT_RESOLUTION>>1);
   stExecutor.steps[X_AXIS] = block->steps[X_AXIS];
   stExecutor.steps[Y_AXIS] = block->steps[Y_AXIS];
   stExecutor.steps[Z_AXIS] = block->steps[Z_AXIS];
@@ -133,7 +163,6 @@ void transferInfoToStExecutor(block_t* block){
   stExecutor.xyzDireation = block->directionBits;
   stExecutor.eventCount = block->stepEventCount;
   stExecutor.stepEventsCompleted = 0;
-  
 }
 
 void stExecutorInitProcess(void){
@@ -271,14 +300,42 @@ int getDireationFlag(uint8_t reg,int axis){
 }
 
 // For testing purpose
-void blockConfig(block_t* block,uint8_t dir,uint32_t stepX, uint32_t stepY, uint32_t stepZ){
+void blockConfig(block_t* block, 
+                 uint8_t dir,
+                 uint32_t stepX, 
+                 uint32_t stepY, 
+                 uint32_t stepZ, 
+                 uint32_t initialRate, 
+                 uint32_t nominalRate,
+                 uint32_t finalRate
+                 ){
     block->stepEventCount = max(stepX,max(stepY,stepZ));
     block->directionBits = dir;
     block->steps[X_AXIS] = stepX;
     block->steps[Y_AXIS] = stepY;
     block->steps[Z_AXIS] = stepZ;
+    block->initialRate = initialRate;
+    block->nominalRate = nominalRate;
+    block->finalRate = finalRate;
+}
+//2880000 58.33
+float estimateAccelerationStep(float initialRate, float targetRate, float acceleration) 
+{
+  
+  // printf("initialRate = %d\n",initialRate);
+  // printf("targetRate = %d\n",targetRate);
+  // float i = (initialRate + (targetRate-initialRate)/2.0);
+  // printf("i = %f\n",i);
+  // float j = targetRate/(float)acceleration;
+  // printf("j = %f\n",j);
+  // float z = j*i;
+  // printf("z = %f\n", z/2.0);
+  //return ((((targetRate+initialRate)/2.0)*(targetRate/(float)(acceleration)))/2.0);
+  return( ((targetRate*targetRate)-(initialRate*initialRate))/((float)(2.0*acceleration) ));
 }
 
-
-
+uint32_t estimateDeccelerationStep(){
+  return (currentBlock->stepEventCount - currentBlock->accelerateUntil );
+  
+}
 

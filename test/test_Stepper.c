@@ -144,6 +144,7 @@ void test_TIM2_IRQHandler_IRQ_to_request_block_when_buffer_block_contain_blocks(
   bufferHead = nextBlockIndex(bufferHead);
   bufferHead = nextBlockIndex(bufferHead);
   bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,160000,160000,80000);
   TIM2_IRQHandler();
   TEST_ASSERT_EQUAL_PTR(&(blockBuffer[bufferTail]),currentBlock);  
 }
@@ -172,6 +173,7 @@ void test_transferInfoToStExecutor_when_IRQ_successfully_get_a_block_and_transfe
   newBlock.steps[X_AXIS] = 400;
   newBlock.steps[Y_AXIS] = 300;
   newBlock.steps[Z_AXIS] = 200;  
+  newBlock.initialRate = 80000;
   transferInfoToStExecutor(&newBlock);
   TEST_ASSERT_EQUAL(400,stExecutor.eventCount);
   TEST_ASSERT_EQUAL(-(stExecutor.eventCount>>1),stExecutor.error[X_AXIS]);
@@ -181,6 +183,12 @@ void test_transferInfoToStExecutor_when_IRQ_successfully_get_a_block_and_transfe
   TEST_ASSERT_EQUAL(300,stExecutor.steps[Y_AXIS]);
   TEST_ASSERT_EQUAL(200,stExecutor.steps[Z_AXIS]);
   TEST_ASSERT_EQUAL(0x70,stExecutor.xyzDireation);
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(0,stExecutor.cyclePerStepCounter);
+  TEST_ASSERT_EQUAL(750,stExecutor.minSafeRate);
+  
 }
 
 /*
@@ -587,48 +595,53 @@ void test_TIM2_IRQHandler_and_executeStepDisplacementProcess_simulate_when_TIM_i
 
 void test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest(void){
    bufferHead = nextBlockIndex(bufferHead);
-   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,80000,160000);
    TEST_ASSERT_EQUAL(100,blockBuffer[bufferTail].stepEventCount);
    TEST_ASSERT_EQUAL(0x00,blockBuffer[bufferTail].directionBits);
    TEST_ASSERT_EQUAL(100,blockBuffer[bufferTail].steps[X_AXIS]);
    TEST_ASSERT_EQUAL(75,blockBuffer[bufferTail].steps[Y_AXIS]);
    TEST_ASSERT_EQUAL(10,blockBuffer[bufferTail].steps[Z_AXIS]);
+   TEST_ASSERT_EQUAL(80000,blockBuffer[bufferTail].initialRate);
+   TEST_ASSERT_EQUAL(160000,blockBuffer[bufferTail].nominalRate);
 }
 
 void test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest(void){
    bufferHead = nextBlockIndex(bufferHead);
-   blockConfig(&blockBuffer[bufferTail],0x00,100,300,200);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,300,200,6000,8000);
    TEST_ASSERT_EQUAL(300,blockBuffer[bufferTail].stepEventCount);
    TEST_ASSERT_EQUAL(0x00,blockBuffer[bufferTail].directionBits);
    TEST_ASSERT_EQUAL(100,blockBuffer[bufferTail].steps[X_AXIS]);
    TEST_ASSERT_EQUAL(300,blockBuffer[bufferTail].steps[Y_AXIS]);
    TEST_ASSERT_EQUAL(200,blockBuffer[bufferTail].steps[Z_AXIS]);
+   TEST_ASSERT_EQUAL(6000,blockBuffer[bufferTail].initialRate);
 }
 
 void test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest(void){
    bufferHead = nextBlockIndex(bufferHead);
-   blockConfig(&blockBuffer[bufferTail],0x00,100,300,1000);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,300,1000,7000,9000);
    TEST_ASSERT_EQUAL(1000,blockBuffer[bufferTail].stepEventCount);
    TEST_ASSERT_EQUAL(0x00,blockBuffer[bufferTail].directionBits);
    TEST_ASSERT_EQUAL(100,blockBuffer[bufferTail].steps[X_AXIS]);
    TEST_ASSERT_EQUAL(300,blockBuffer[bufferTail].steps[Y_AXIS]);
    TEST_ASSERT_EQUAL(1000,blockBuffer[bufferTail].steps[Z_AXIS]);
+   TEST_ASSERT_EQUAL(7000,blockBuffer[bufferTail].initialRate);
+   TEST_ASSERT_EQUAL(9000,blockBuffer[bufferTail].nominalRate);
 }
 
 
 /*---------motorRateControlProcess--------*/
-void test_motorRateControlProcess_when_motor_moving_step_is_finish_the_current_block_will_be_discarded(void){
-    bufferHead = nextBlockIndex(bufferHead);
-    blockConfig(&blockBuffer[bufferTail],0x00,100,75,10);
-    stExecutorInitProcess();
-    stExecutor.stepEventsCompleted = currentBlock->stepEventCount;
-    motorRateControlProcess();
-    TEST_ASSERT_NULL(currentBlock);
-    TEST_ASSERT_EQUAL(bufferHead,bufferTail);  
-}
+// void xtest_motorRateControlProcess_when_motor_moving_step_is_finish_the_current_block_will_be_discarded(void){
+    // bufferHead = nextBlockIndex(bufferHead);
+    // blockConfig(&blockBuffer[bufferTail],0x00,100,75,10);
+    // stExecutorInitProcess();
+    // stExecutor.stepEventsCompleted = currentBlock->stepEventCount;
+    // motorRateControlProcess();
+    // TEST_ASSERT_NULL(currentBlock);
+    // TEST_ASSERT_EQUAL(bufferHead,bufferTail);  
+// }
 
 
-
+/*----------setTickPerStepEventToTimer-----------*/
 
 void test_setTickPerStepEventToTimer_if_cycle_15000000_the_actual_cycle_is_58593_and_prescale_is_256(void){
  TEST_ASSERT_EQUAL(58593,setCyclePerStepEventToTimer(15000000));
@@ -663,17 +676,16 @@ void test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000(
 
 void test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800(void){
   setStepEventPerMin(100);
-  TEST_ASSERT_EQUAL(42187,stExecutor.cyclePerStepEvent);
-  TEST_ASSERT_EQUAL(42186,TIM2->CNT);
-  TEST_ASSERT_EQUAL(127,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(56250,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(56249,TIM2->CNT);
+  TEST_ASSERT_EQUAL(255,TIM2->ARR); 
 }
+/*-------------iterateCycleCounter----------------*/
 
-
-void test_iterateCycleCounter_stepsPerMin_is_80000(void){
-   uint32_t stepsPerMin = 80000;
-   setStepEventPerMin(stepsPerMin);
-   uint32_t cyclePerStepEvent = stExecutor.cyclePerStepEvent;
-   int limit = CYCLES_PER_ACCELERATION_TICK/cyclePerStepEvent;
+void test_iterateCycleCounter_when_currentRate_is_80000_after_the_function_in_several_loop_cyclePerStepConter_will_remain_6000(void){
+   uint32_t currentRate = 80000;
+   setStepEventPerMin(currentRate);
+   int limit = CYCLES_PER_ACCELERATION_TICK/stExecutor.cyclePerStepEvent;
    stExecutor.cyclePerStepCounter = 0; 
    TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
    TEST_ASSERT_EQUAL(750000,CYCLES_PER_ACCELERATION_TICK);
@@ -685,24 +697,486 @@ void test_iterateCycleCounter_stepsPerMin_is_80000(void){
    TEST_ASSERT_EQUAL(6000,stExecutor.cyclePerStepCounter);
 }
 
-void test_iterateCycleCounter_stepsPerMin_is_100(void){
-   uint32_t stepsPerMin = 100;
-   setStepEventPerMin(stepsPerMin);
-   uint32_t cyclePerStepEvent = stExecutor.cyclePerStepEvent;
-   int limit = CYCLES_PER_ACCELERATION_TICK/cyclePerStepEvent;
+void test_iterateCycleCounter_currentRate_is_100_after_the_function_in_several_loop_cyclePerStepConter_will_remain_9366(void){
+   uint32_t currentRate = 100;
+   setStepEventPerMin(currentRate);
+   int limit = CYCLES_PER_ACCELERATION_TICK/stExecutor.cyclePerStepEvent;
    stExecutor.cyclePerStepCounter = 0; 
-   TEST_ASSERT_EQUAL(42187,stExecutor.cyclePerStepEvent);
+   TEST_ASSERT_EQUAL(56250,stExecutor.cyclePerStepEvent);
+   TEST_ASSERT_EQUAL(56249,TIM2->CNT);
+   TEST_ASSERT_EQUAL(255,TIM2->ARR); 
    TEST_ASSERT_EQUAL(750000,CYCLES_PER_ACCELERATION_TICK);
    int i = 0;
+   //printf("limit = %d\n",limit);
    for(i = 0; i < limit ; i++){
     TEST_ASSERT_EQUAL(false,iterateCycleCounter());
    }
    TEST_ASSERT_EQUAL(true,iterateCycleCounter());
-   TEST_ASSERT_EQUAL(9366,stExecutor.cyclePerStepCounter);
+   TEST_ASSERT_EQUAL(37500,stExecutor.cyclePerStepCounter);
    
-   for(i = 0; i < limit ; i++){
+   for(i = 0; i < limit-1 ; i++){
     TEST_ASSERT_EQUAL(false,iterateCycleCounter());
    }
    TEST_ASSERT_EQUAL(true,iterateCycleCounter());
-   TEST_ASSERT_EQUAL(18732,stExecutor.cyclePerStepCounter);
+   TEST_ASSERT_EQUAL(18750,stExecutor.cyclePerStepCounter);
 }
+
+
+void test_acceleratreRate_when_currentRate_is_80000_after_the_function_in_several_loop_the_currentRate_will_be_increased_to_80500(void){
+   bufferHead = nextBlockIndex(bufferHead);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,80000,160000,80000);
+   stExecutorInitProcess();
+   int limit = CYCLES_PER_ACCELERATION_TICK/stExecutor.cyclePerStepEvent;
+   int i;
+   for(i = 0; i <= limit ; i++){
+    accelerateRate();
+   }
+    TEST_ASSERT_EQUAL(6000,stExecutor.cyclePerStepCounter);
+    TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+    TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+    TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+    TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+}
+
+void test_acceleratreRate_when_currentRate_is_160000_the_currentRate_does_not_increase_any_more(void){
+   bufferHead = nextBlockIndex(bufferHead);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,160000,160000,80000);
+   stExecutorInitProcess();
+   int limit = CYCLES_PER_ACCELERATION_TICK/stExecutor.cyclePerStepEvent;
+   int i;
+   for(i = 0; i <= limit ; i++){
+    accelerateRate();
+   }
+    TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+    TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+    TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+    TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+}
+
+void test_accelerateRate_the_currentRate_will_increase_from_80000_to_160000_the_total_step_is(void){
+   bufferHead = nextBlockIndex(bufferHead);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,80000,160000,80000);
+   stExecutorInitProcess();
+   currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+   //printf("currentBlock->accelerateUntil = %d\n",currentBlock->accelerateUntil);
+   int steps = 0;
+   while(steps < currentBlock->accelerateUntil){
+     accelerateRate();
+     steps++;
+     //printf("stExecutor.currentRate = %d\n",stExecutor.currentRate);
+   }
+   TEST_ASSERT_EQUAL(currentBlock->accelerateUntil,steps);
+   TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+   TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+   TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+   TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+}
+
+
+void test_nominalRate_if_currentRate_is_not_equal_nominalRate_the_currentRate_will_be_equal_to_nominalRate(void){
+   bufferHead = nextBlockIndex(bufferHead);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,80000,160000,80000);
+   stExecutorInitProcess();
+   nominalRate();
+   TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+   TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+   TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+   TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+}
+
+void test_nominalRate_if_currentRate_is_equal_nominalRate_the_currentRate_will_be_remain(void){
+   bufferHead = nextBlockIndex(bufferHead);
+   blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,160000,160000,80000);
+   stExecutorInitProcess();
+   nominalRate();
+   TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+   TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+   TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+   TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+}
+
+void test_decelerationAbjustment_if_currentRate_is_more_than_minSafeRate_the_currentRate_will_be_mimus_by_increment_resolution(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,80000,160000,70000);
+  stExecutorInitProcess();
+  int limit = CYCLES_PER_ACCELERATION_TICK/stExecutor.cyclePerStepEvent;
+   int i;
+  for(i = 0; i <= limit ; i++){
+     deccelerationAbjustment();
+     //printf("stExecutor.currentRate  = %d\n",stExecutor.cyclePerStepCounter );
+  }
+
+  TEST_ASSERT_EQUAL(79500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(54300,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(54299,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR);  
+}
+
+void test_decelerationAbjustment_if_currentRate_is_less_than_minSafeRate_the_currentRate_will_be_divide_by_2(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,700,160000,80000);
+  stExecutorInitProcess();
+   int limit = CYCLES_PER_ACCELERATION_TICK/stExecutor.cyclePerStepEvent;
+   int i;
+   for(i = 0; i <= limit ; i++){
+     deccelerationAbjustment();
+   }
+  
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR);  
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+}
+
+void test_decelerationAbjustment_if_currentRate_is_less_than_finalRate_the_currentRate_will_become_finalRate(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,100,75,10,80000,160000,80000);
+  stExecutorInitProcess();
+  deccelerationAbjustment();
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR);  
+}
+
+void test_initializeDeccelerate_when_the_currentRate_is_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_0(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,160000,160000,80000);
+  stExecutorInitProcess();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  stExecutor.stepEventsCompleted = currentBlock->deccelerateAfter;
+  initializeDecceleration();
+  TEST_ASSERT_EQUAL(0,stExecutor.cyclePerStepCounter);
+  
+}
+
+void test_initializeDeccelerate_when_the_currentRate_is_not_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_cyclesPerAccelerationTick_divide_by_2(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,80000,160000,80000);
+  stExecutorInitProcess();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  stExecutor.stepEventsCompleted = currentBlock->deccelerateAfter;
+  stExecutor.cyclePerStepCounter = 54000;
+  initializeDecceleration();
+  TEST_ASSERT_EQUAL(CYCLES_PER_ACCELERATION_TICK-54000,stExecutor.cyclePerStepCounter);
+}
+
+void test_deccelerateRate_when_the_currentRate_is_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_0(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,160000,160000,80000);
+  stExecutorInitProcess();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  stExecutor.stepEventsCompleted = currentBlock->deccelerateAfter;TEST_ASSERT_EQUAL(0,stExecutor.cyclePerStepCounter);  
+  deccelerateRate();
+  TEST_ASSERT_EQUAL(0,stExecutor.cyclePerStepCounter);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR);  
+}
+
+void test_deccelerateRate_when_the_currentRate_is_not_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_cyclesPerAccelerationTick_divide_by_2(void){
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,80000,160000,80000);
+  stExecutorInitProcess();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  stExecutor.stepEventsCompleted = currentBlock->deccelerateAfter;
+  stExecutor.cyclePerStepCounter = 54000;
+  deccelerateRate();
+  TEST_ASSERT_EQUAL(CYCLES_PER_ACCELERATION_TICK-54000,stExecutor.cyclePerStepCounter);
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR);  
+}
+
+void test_accelerateAndDeccelerateEvent_(void){
+  
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,80000,160000,80000);
+  stExecutorInitProcess();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  
+  TEST_ASSERT_EQUAL(3334,currentBlock->accelerateUntil);
+  TEST_ASSERT_EQUAL(6666,currentBlock->deccelerateAfter);
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(0,stExecutor.stepEventsCompleted);
+  
+  int updateCurrentCycle2 = CYCLES_PER_ACCELERATION_TICK/27000 + 1;
+  int updateCurrentCycle1 = CYCLES_PER_ACCELERATION_TICK/54000 + 1;
+  //printf("stExecutor.cyclePerStepEvent = %d\n",stExecutor.cyclePerStepEvent); 
+  //printf("updateCurrentCycle = %d\n",updateCurrentCycle); 
+  
+  while(stExecutor.stepEventsCompleted < updateCurrentCycle1 ){
+     stExecutor.stepEventsCompleted++;
+     accelerateAndDeccelerateEvent();
+  }
+  TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(14,stExecutor.stepEventsCompleted);
+  
+  
+  while(stExecutor.stepEventsCompleted < currentBlock->accelerateUntil){
+     stExecutor.stepEventsCompleted++;
+     accelerateAndDeccelerateEvent();
+  }
+  
+  TEST_ASSERT_EQUAL(currentBlock->accelerateUntil,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(3334,stExecutor.stepEventsCompleted);
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->accelerateUntil+1000) ){
+     stExecutor.stepEventsCompleted++;
+     accelerateAndDeccelerateEvent();
+  }
+  
+  TEST_ASSERT_EQUAL(1000+currentBlock->accelerateUntil,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->deccelerateAfter) ){
+     stExecutor.stepEventsCompleted++;
+     accelerateAndDeccelerateEvent();
+  }
+  TEST_ASSERT_EQUAL(currentBlock->deccelerateAfter,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(stExecutor.cyclePerStepCounter,0); 
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->deccelerateAfter) + updateCurrentCycle2 ){
+     stExecutor.stepEventsCompleted++;
+     accelerateAndDeccelerateEvent();
+  }
+  
+  TEST_ASSERT_EQUAL(159500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(currentBlock->deccelerateAfter + updateCurrentCycle2 ,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(6000,stExecutor.cyclePerStepCounter);
+  TEST_ASSERT_EQUAL(27060,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(27059,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+
+  while(stExecutor.stepEventsCompleted <  currentBlock->stepEventCount - 1  ){
+     stExecutor.stepEventsCompleted++;
+     accelerateAndDeccelerateEvent();
+  }
+  
+  
+  TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(currentBlock->stepEventCount - 1,stExecutor.stepEventsCompleted);
+  
+  
+}
+
+
+void test_motorRateControlProcess_(void){
+  
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,80000,160000,80000);
+  stExecutorInitProcess();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  
+  TEST_ASSERT_EQUAL(3334,currentBlock->accelerateUntil);
+  TEST_ASSERT_EQUAL(6666,currentBlock->deccelerateAfter);
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(0,stExecutor.stepEventsCompleted);
+  
+  int updateCurrentCycle2 = CYCLES_PER_ACCELERATION_TICK/27000 + 1;
+  int updateCurrentCycle1 = CYCLES_PER_ACCELERATION_TICK/54000 + 1;
+  //printf("stExecutor.cyclePerStepEvent = %d\n",stExecutor.cyclePerStepEvent); 
+  //printf("updateCurrentCycle = %d\n",updateCurrentCycle); 
+  
+  while(stExecutor.stepEventsCompleted < updateCurrentCycle1 ){
+     stExecutor.stepEventsCompleted++;
+     motorRateControlProcess();
+  }
+  TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(14,stExecutor.stepEventsCompleted);
+  
+  
+  while(stExecutor.stepEventsCompleted < currentBlock->accelerateUntil){
+     stExecutor.stepEventsCompleted++;
+     motorRateControlProcess();
+  }
+  
+  TEST_ASSERT_EQUAL(currentBlock->accelerateUntil,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(3334,stExecutor.stepEventsCompleted);
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->accelerateUntil+1000) ){
+     stExecutor.stepEventsCompleted++;
+     motorRateControlProcess();
+  }
+  
+  TEST_ASSERT_EQUAL(1000+currentBlock->accelerateUntil,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->deccelerateAfter) ){
+     stExecutor.stepEventsCompleted++;
+     motorRateControlProcess();
+  }
+  TEST_ASSERT_EQUAL(currentBlock->deccelerateAfter,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(stExecutor.cyclePerStepCounter,0); 
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->deccelerateAfter) + updateCurrentCycle2 ){
+     stExecutor.stepEventsCompleted++;
+     motorRateControlProcess();
+  }
+  
+  TEST_ASSERT_EQUAL(159500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(currentBlock->deccelerateAfter + updateCurrentCycle2 ,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(6000,stExecutor.cyclePerStepCounter);
+  TEST_ASSERT_EQUAL(27060,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(27059,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+
+  while(stExecutor.stepEventsCompleted <  currentBlock->stepEventCount - 1  ){
+     stExecutor.stepEventsCompleted++;
+     motorRateControlProcess();
+  }
+  
+  //printf("stExecutor.stepEventsCompleted = %d\n",stExecutor.stepEventsCompleted); 
+  TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(currentBlock->stepEventCount - 1,stExecutor.stepEventsCompleted);
+  
+  
+  stExecutor.stepEventsCompleted++;
+  motorRateControlProcess();
+  
+  TEST_ASSERT_EQUAL(stExecutor.eventCount,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(bufferHead,bufferTail);
+  TEST_ASSERT_NULL(currentBlock);
+}
+
+void test_TIM2_IRQHandler_(void){
+  
+  bufferHead = nextBlockIndex(bufferHead);
+  blockConfig(&blockBuffer[bufferTail],0x00,10000,8000,2000,80000,160000,80000);
+  //stExecutorInitProcess();
+  TIM2_IRQHandler();
+  currentBlock->accelerateUntil = ceil(estimateAccelerationStep(currentBlock->initialRate,currentBlock->nominalRate, ACCELERATION*80));
+  currentBlock->deccelerateAfter = estimateDeccelerationStep();
+  
+  TEST_ASSERT_EQUAL(3334,currentBlock->accelerateUntil);
+  TEST_ASSERT_EQUAL(6666,currentBlock->deccelerateAfter);
+  TEST_ASSERT_EQUAL(80000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(54000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(1,stExecutor.stepEventsCompleted);
+  
+  int updateCurrentCycle2 = CYCLES_PER_ACCELERATION_TICK/27000 + 1;
+  int updateCurrentCycle1 = CYCLES_PER_ACCELERATION_TICK/54000 + 1;
+  //printf("stExecutor.cyclePerStepEvent = %d\n",stExecutor.cyclePerStepEvent); 
+  //printf("updateCurrentCycle = %d\n",updateCurrentCycle); 
+  
+  while(stExecutor.stepEventsCompleted < updateCurrentCycle1 ){
+     TIM2_IRQHandler();
+  }
+  TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(14,stExecutor.stepEventsCompleted);
+  
+  
+  while(stExecutor.stepEventsCompleted < currentBlock->accelerateUntil){
+     TIM2_IRQHandler();
+  }
+  
+  TEST_ASSERT_EQUAL(currentBlock->accelerateUntil,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(3334,stExecutor.stepEventsCompleted);
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->accelerateUntil+1000) ){
+     TIM2_IRQHandler();
+  }
+  
+  TEST_ASSERT_EQUAL(1000+currentBlock->accelerateUntil,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->deccelerateAfter) ){
+     TIM2_IRQHandler();
+  }
+  TEST_ASSERT_EQUAL(currentBlock->deccelerateAfter,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(160000,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(27000,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(26999,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(stExecutor.cyclePerStepCounter,0); 
+  
+  while(stExecutor.stepEventsCompleted <  (currentBlock->deccelerateAfter) + updateCurrentCycle2 ){
+     TIM2_IRQHandler();
+  }
+  
+  TEST_ASSERT_EQUAL(159500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(currentBlock->deccelerateAfter + updateCurrentCycle2 ,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(6000,stExecutor.cyclePerStepCounter);
+  TEST_ASSERT_EQUAL(27060,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(27059,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+
+  while(stExecutor.stepEventsCompleted <  currentBlock->stepEventCount - 1  ){
+     TIM2_IRQHandler();
+  }
+  
+  //printf("stExecutor.stepEventsCompleted = %d\n",stExecutor.stepEventsCompleted); 
+  TEST_ASSERT_EQUAL(80500,stExecutor.currentRate);
+  TEST_ASSERT_EQUAL(53640,stExecutor.cyclePerStepEvent);
+  TEST_ASSERT_EQUAL(53639,TIM2->CNT);
+  TEST_ASSERT_EQUAL(0,TIM2->ARR); 
+  TEST_ASSERT_EQUAL(currentBlock->stepEventCount - 1,stExecutor.stepEventsCompleted);
+  
+  
+  TIM2_IRQHandler();
+  
+  TEST_ASSERT_EQUAL(stExecutor.eventCount,stExecutor.stepEventsCompleted);
+  TEST_ASSERT_EQUAL(bufferHead,bufferTail);
+  TEST_ASSERT_NULL(currentBlock);
+}
+

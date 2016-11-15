@@ -23,6 +23,7 @@ typedef struct{
   uint32_t currentRate;
   uint32_t cyclePerStepEvent;
   uint32_t cyclePerStepCounter;
+  uint32_t minSafeRate;
   
 }stepper_t;
 
@@ -42,4 +43,12 @@ int getOutputFlagStatus(uint8_t reg,int axis);
 uint8_t getStepStatus(int axis);
 uint8_t getMoveDireaction(int axis);
 void planningDataSending(void);
+float estimateAccelerationStep(float initialRate, float targetRate, float acceleration);
+void accelerateRate(void);
+void deccelerateRate(void);
+void deccelerationAbjustment(void);
+void nominalRate(void);
+void initializeDecceleration(void);
+void motorRateControlProcess(void);
+void accelerateAndDeccelerateEvent(void);
 #endif // Stepper_H

@@ -22,151 +22,143 @@
   :line: 143
   :message: ''
 - :test: test_TIM2_IRQHandler_no_more_block_for_IRQ_to_request_and_IRQ_will_go_to_sleep
-  :line: 161
+  :line: 162
   :message: ''
 - :test: test_transferInfoToStExecutor_when_IRQ_successfully_get_a_block_and_transfer_info_to_st_executor_from_block
-  :line: 168
+  :line: 169
   :message: ''
 - :test: test_TIM2_IRQHandler_get_block_from_block_buffer_and_transfer_block_info_into_st_executor
-  :line: 198
+  :line: 206
   :message: ''
 - :test: test_bresenhamAlgorithm_when_dx_is_10_and_dy_is_10_
-  :line: 234
+  :line: 242
   :message: ''
 - :test: test_bresenhamAlgorithm_when_dx_is_20_and_dy_is_15_
-  :line: 268
+  :line: 276
   :message: ''
 - :test: test_executeStepDisplament_XYZ_direations_are_positive_
-  :line: 304
+  :line: 312
   :message: ''
 - :test: test_executeStepDisplament_XYZ_direations_are_negative_
-  :line: 360
+  :line: 368
   :message: ''
 - :test: test_executeStepDisplacementProcess_the_functon_is_called_and_using_for_loop
-  :line: 403
+  :line: 411
   :message: ''
 - :test: test_getStepStatus_when_x_y_z_rest
-  :line: 446
+  :line: 454
   :message: ''
 - :test: test_getStepStatus_when_x_y_z_move_
-  :line: 453
+  :line: 461
   :message: ''
 - :test: test_getMoveDireaction_when_x_y_z_are_moving_right_direation
-  :line: 460
+  :line: 468
   :message: ''
 - :test: test_getMoveDireaction_when_x_y_z_are_moving_left_direation
-  :line: 467
+  :line: 475
   :message: ''
 - :test: test_planningDataSending_XYZ_direations_are_negative_
-  :line: 474
+  :line: 482
   :message: ''
 - :test: test_planningDataSending_XYZ_direations_are_positive_
-  :line: 485
+  :line: 493
   :message: ''
 - :test: test_planningDataSending_XYZ_motor_take_a_rest_
-  :line: 496
+  :line: 504
   :message: ''
 - :test: test_executeStepDisplacementProcess_planningDataSending_the_functon_is_called_and_using_for_loop
-  :line: 510
+  :line: 518
   :message: ''
 - :test: test_executeStepDisplacementProcess_planningDataSending_sendResetStep_the_functon_is_called_and_using_for_loop
-  :line: 542
+  :line: 550
   :message: ''
 - :test: test_TIM2_IRQHandler_and_executeStepDisplacementProcess_simulate_when_TIM_interrupt_occur
-  :line: 568
+  :line: 576
   :message: ''
 - :test: test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest
-  :line: 588
+  :line: 596
   :message: ''
 - :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest
-  :line: 598
-  :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest
   :line: 608
   :message: ''
-- :test: test_motorRateControlProcess_when_motor_moving_step_is_finish_the_current_block_will_be_discarded
-  :line: 620
+- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest
+  :line: 619
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_15000000_the_actual_cycle_is_58593_and_prescale_is_256
-  :line: 633
+  :line: 646
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_72000000_the_actual_cycle_is_35156_and_prescale_is_2047
-  :line: 639
+  :line: 652
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_50000_the_actual_cycle_is_50000_and_prescale_is_0
-  :line: 645
+  :line: 658
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_1_the_actual_cycle_is_1_and_prescale_is_0
-  :line: 651
-  :message: ''
-- :test: test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000
-  :line: 657
-  :message: ''
-- :test: test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800
   :line: 664
   :message: ''
-- :test: test_iterateCycleCounter_stepsPerMin_is_80000
-  :line: 672
+- :test: test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000
+  :line: 670
   :message: ''
-- :test: test_iterateCycleCounter_stepsPerMin_is_100
-  :line: 688
+- :test: test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800
+  :line: 677
+  :message: ''
+- :test: test_iterateCycleCounter_when_currentRate_is_80000_after_the_function_in_several_loop_cyclePerStepConter_will_remain_6000
+  :line: 685
+  :message: ''
+- :test: test_iterateCycleCounter_currentRate_is_100_after_the_function_in_several_loop_cyclePerStepConter_will_remain_9366
+  :line: 700
+  :message: ''
+- :test: test_acceleratreRate_when_currentRate_is_80000_after_the_function_in_several_loop_the_currentRate_will_be_increased_to_80500
+  :line: 725
+  :message: ''
+- :test: test_acceleratreRate_when_currentRate_is_160000_the_currentRate_does_not_increase_any_more
+  :line: 741
+  :message: ''
+- :test: test_accelerateRate_the_currentRate_will_increase_from_80000_to_160000_the_total_step_is
+  :line: 756
+  :message: ''
+- :test: test_nominalRate_if_currentRate_is_not_equal_nominalRate_the_currentRate_will_be_equal_to_nominalRate
+  :line: 776
+  :message: ''
+- :test: test_nominalRate_if_currentRate_is_equal_nominalRate_the_currentRate_will_be_remain
+  :line: 787
+  :message: ''
+- :test: test_decelerationAbjustment_if_currentRate_is_more_than_minSafeRate_the_currentRate_will_be_mimus_by_increment_resolution
+  :line: 798
+  :message: ''
+- :test: test_decelerationAbjustment_if_currentRate_is_less_than_minSafeRate_the_currentRate_will_be_divide_by_2
+  :line: 815
+  :message: ''
+- :test: test_decelerationAbjustment_if_currentRate_is_less_than_finalRate_the_currentRate_will_become_finalRate
+  :line: 831
+  :message: ''
+- :test: test_initializeDeccelerate_when_the_currentRate_is_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_0
+  :line: 842
+  :message: ''
+- :test: test_initializeDeccelerate_when_the_currentRate_is_not_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_cyclesPerAccelerationTick_divide_by_2
+  :line: 854
+  :message: ''
+- :test: test_deccelerateRate_when_the_currentRate_is_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_0
+  :line: 866
+  :message: ''
+- :test: test_deccelerateRate_when_the_currentRate_is_not_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_cyclesPerAccelerationTick_divide_by_2
+  :line: 881
+  :message: ''
+- :test: test_accelerateAndDeccelerateEvent_
+  :line: 897
+  :message: ''
+- :test: test_motorRateControlProcess_
+  :line: 991
+  :message: ''
+- :test: test_TIM2_IRQHandler_
+  :line: 1090
   :message: ''
 :failures: []
 :ignores: []
 :counts:
-  :total: 36
-  :passed: 36
+  :total: 50
+  :passed: 50
   :failed: 0
   :ignored: 0
 :stdout:
-- " stExecutor.cyclePerStepCounter = 54000"
-- " stExecutor.cyclePerStepCounter = 108000"
-- " stExecutor.cyclePerStepCounter = 162000"
-- " stExecutor.cyclePerStepCounter = 216000"
-- " stExecutor.cyclePerStepCounter = 270000"
-- " stExecutor.cyclePerStepCounter = 324000"
-- " stExecutor.cyclePerStepCounter = 378000"
-- " stExecutor.cyclePerStepCounter = 432000"
-- " stExecutor.cyclePerStepCounter = 486000"
-- " stExecutor.cyclePerStepCounter = 540000"
-- " stExecutor.cyclePerStepCounter = 594000"
-- " stExecutor.cyclePerStepCounter = 648000"
-- " stExecutor.cyclePerStepCounter = 702000"
-- " stExecutor.cyclePerStepCounter = 756000"
-- " stExecutor.cyclePerStepCounter = 42187"
-- " stExecutor.cyclePerStepCounter = 84374"
-- " stExecutor.cyclePerStepCounter = 126561"
-- " stExecutor.cyclePerStepCounter = 168748"
-- " stExecutor.cyclePerStepCounter = 210935"
-- " stExecutor.cyclePerStepCounter = 253122"
-- " stExecutor.cyclePerStepCounter = 295309"
-- " stExecutor.cyclePerStepCounter = 337496"
-- " stExecutor.cyclePerStepCounter = 379683"
-- " stExecutor.cyclePerStepCounter = 421870"
-- " stExecutor.cyclePerStepCounter = 464057"
-- " stExecutor.cyclePerStepCounter = 506244"
-- " stExecutor.cyclePerStepCounter = 548431"
-- " stExecutor.cyclePerStepCounter = 590618"
-- " stExecutor.cyclePerStepCounter = 632805"
-- " stExecutor.cyclePerStepCounter = 674992"
-- " stExecutor.cyclePerStepCounter = 717179"
-- " stExecutor.cyclePerStepCounter = 759366"
-- " stExecutor.cyclePerStepCounter = 51553"
-- " stExecutor.cyclePerStepCounter = 93740"
-- " stExecutor.cyclePerStepCounter = 135927"
-- " stExecutor.cyclePerStepCounter = 178114"
-- " stExecutor.cyclePerStepCounter = 220301"
-- " stExecutor.cyclePerStepCounter = 262488"
-- " stExecutor.cyclePerStepCounter = 304675"
-- " stExecutor.cyclePerStepCounter = 346862"
-- " stExecutor.cyclePerStepCounter = 389049"
-- " stExecutor.cyclePerStepCounter = 431236"
-- " stExecutor.cyclePerStepCounter = 473423"
-- " stExecutor.cyclePerStepCounter = 515610"
-- " stExecutor.cyclePerStepCounter = 557797"
-- " stExecutor.cyclePerStepCounter = 599984"
-- " stExecutor.cyclePerStepCounter = 642171"
-- " stExecutor.cyclePerStepCounter = 684358"
-- " stExecutor.cyclePerStepCounter = 726545"
-- " stExecutor.cyclePerStepCounter = 768732"
 - ''
