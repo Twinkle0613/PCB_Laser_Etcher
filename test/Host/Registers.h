@@ -11,5 +11,7 @@
 #define DMA1_BASE_ADDRESS  ((uint32_t)HostDma1)
 #define DMA1_Channel3_BASE_ADDRESS ((uint32_t)HostDma1_Channel3)
 #define NVIC_BASE_ADDRESS ((uint32_t)HostNVIC)
+#define USART1_BASE_ADDRESS ((uint32_t)HostUSART1)
+
 
 #endif //__Registers_H__

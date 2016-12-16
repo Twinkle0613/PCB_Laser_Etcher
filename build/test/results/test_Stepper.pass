@@ -75,89 +75,83 @@
 - :test: test_TIM2_IRQHandler_and_executeStepDisplacementProcess_simulate_when_TIM_interrupt_occur
   :line: 576
   :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest
-  :line: 596
-  :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest
-  :line: 608
-  :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest
-  :line: 619
+- :test: test_motorRateControlProcess_when_motor_moving_step_is_finish_the_current_block_will_be_discarded
+  :line: 600
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_15000000_the_actual_cycle_is_58593_and_prescale_is_256
-  :line: 646
+  :line: 614
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_72000000_the_actual_cycle_is_35156_and_prescale_is_2047
-  :line: 652
+  :line: 620
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_50000_the_actual_cycle_is_50000_and_prescale_is_0
-  :line: 658
+  :line: 626
   :message: ''
 - :test: test_setTickPerStepEventToTimer_if_cycle_1_the_actual_cycle_is_1_and_prescale_is_0
-  :line: 664
+  :line: 632
   :message: ''
 - :test: test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000
-  :line: 670
+  :line: 638
   :message: ''
 - :test: test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800
-  :line: 677
+  :line: 645
   :message: ''
 - :test: test_iterateCycleCounter_when_currentRate_is_80000_after_the_function_in_several_loop_cyclePerStepConter_will_remain_6000
-  :line: 685
+  :line: 653
   :message: ''
 - :test: test_iterateCycleCounter_currentRate_is_100_after_the_function_in_several_loop_cyclePerStepConter_will_remain_9366
-  :line: 700
+  :line: 668
   :message: ''
 - :test: test_acceleratreRate_when_currentRate_is_80000_after_the_function_in_several_loop_the_currentRate_will_be_increased_to_80500
-  :line: 725
+  :line: 694
   :message: ''
 - :test: test_acceleratreRate_when_currentRate_is_160000_the_currentRate_does_not_increase_any_more
-  :line: 741
+  :line: 710
   :message: ''
 - :test: test_accelerateRate_the_currentRate_will_increase_from_80000_to_160000_the_total_step_is
-  :line: 756
+  :line: 725
   :message: ''
 - :test: test_nominalRate_if_currentRate_is_not_equal_nominalRate_the_currentRate_will_be_equal_to_nominalRate
-  :line: 776
+  :line: 746
   :message: ''
 - :test: test_nominalRate_if_currentRate_is_equal_nominalRate_the_currentRate_will_be_remain
-  :line: 787
+  :line: 757
   :message: ''
 - :test: test_decelerationAbjustment_if_currentRate_is_more_than_minSafeRate_the_currentRate_will_be_mimus_by_increment_resolution
-  :line: 798
+  :line: 771
   :message: ''
 - :test: test_decelerationAbjustment_if_currentRate_is_less_than_minSafeRate_the_currentRate_will_be_divide_by_2
-  :line: 815
+  :line: 786
   :message: ''
 - :test: test_decelerationAbjustment_if_currentRate_is_less_than_finalRate_the_currentRate_will_become_finalRate
-  :line: 831
+  :line: 802
   :message: ''
 - :test: test_initializeDeccelerate_when_the_currentRate_is_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_0
-  :line: 842
+  :line: 816
   :message: ''
 - :test: test_initializeDeccelerate_when_the_currentRate_is_not_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_cyclesPerAccelerationTick_divide_by_2
-  :line: 854
+  :line: 828
   :message: ''
 - :test: test_deccelerateRate_when_the_currentRate_is_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_0
-  :line: 866
+  :line: 843
   :message: ''
 - :test: test_deccelerateRate_when_the_currentRate_is_not_equal_to_nominalRate_the_cyclePerStepCounter_will_be_set_to_cyclesPerAccelerationTick_divide_by_2
-  :line: 881
+  :line: 858
   :message: ''
 - :test: test_accelerateAndDeccelerateEvent_
-  :line: 897
+  :line: 875
   :message: ''
 - :test: test_motorRateControlProcess_
-  :line: 991
+  :line: 969
   :message: ''
-- :test: test_TIM2_IRQHandler_
-  :line: 1090
+- :test: test_TIM2_IRQHandler_Add_a_block_into_blockBuffer_
+  :line: 1067
   :message: ''
 :failures: []
 :ignores: []
 :counts:
-  :total: 50
-  :passed: 50
+  :total: 48
+  :passed: 48
   :failed: 0
   :ignored: 0
 :stdout:

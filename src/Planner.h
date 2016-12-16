@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "string.h"
 #include "SystemMap.h"
+#include "System.h"
 #define BLOCK_BUFFER_SIZE 18
 
 typedef struct{
@@ -39,11 +40,22 @@ extern volatile uint8_t bufferTail;       // Index of the block to process now
 extern uint8_t nextBufferHead;   // Index of the next buffer head
 extern block_t blockBuffer[BLOCK_BUFFER_SIZE];
 
-
-
 void planInit(void);
 block_t* getCurrentBlock(void);
 uint8_t nextBlockIndex(uint8_t blockIndex);
 uint8_t prevBlockIndex(uint8_t blockIndex);
 
+void blockConfig(block_t* block, 
+                 uint8_t dir,
+                 uint32_t stepX, 
+                 uint32_t stepY, 
+                 uint32_t stepZ, 
+                 uint32_t initialRate, 
+                 uint32_t nominalRate,
+                 uint32_t finalRate
+                 );
+float estimateAccelerationStep(float initialRate, float targetRate, float acceleration);
+float estimateDeccelerationStep(void);
+uint32_t _ceil(float num);
+void discardCurrentBlock(void);
 #endif // Planner_H

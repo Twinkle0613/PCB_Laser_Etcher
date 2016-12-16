@@ -1,0 +1,23 @@
+---
+:source:
+  :path: test
+  :file: test_Motor.c
+:successes:
+- :test: test_motorConfig_initialize_the_motor0
+  :line: 16
+  :message: ''
+- :test: test_getMotorInfo_get_motor_info_when_the_motor_step_is_low
+  :line: 29
+  :message: ''
+- :test: test_getMotorInfo_get_motor_info_when_the_motor_step_is_high
+  :line: 42
+  :message: ''
+:failures: []
+:ignores: []
+:counts:
+  :total: 3
+  :passed: 3
+  :failed: 0
+  :ignored: 0
+:stdout:
+- ''

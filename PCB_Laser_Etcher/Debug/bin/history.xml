@@ -1,28 +1,30 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <history>
-   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -g2 -Map=PCB_Laser_Etcher.map -O0 --gc-sections -LC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher -TC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher/STM32F103C8_FLASH.ld -g">
-      <target file="PCB_Laser_Etcher.elf" lastModified="158625b538b">
-         <source file="..\obj\SystemMap.o" lastModified="15861eb51da"/>
-         <source file="..\obj\Stepper.o" lastModified="158623fb235"/>
-         <source file="..\obj\syscalls.o" lastModified="15861eb5751"/>
-         <source file="..\obj\stm32f10x_usart.o" lastModified="15861eb55ef"/>
-         <source file="..\obj\Tim.o" lastModified="15861eb5b38"/>
-         <source file="..\obj\Dma.o" lastModified="15861eb568b"/>
-         <source file="..\obj\HardwareConfig.o" lastModified="15861eb5a07"/>
-         <source file="..\obj\stm32f10x_gpio.o" lastModified="15861eb5357"/>
-         <source file="..\obj\stm32f10x_rcc.o" lastModified="15861eb5534"/>
-         <source file="..\obj\Spi.o" lastModified="15861eb584b"/>
-         <source file="..\obj\Motor.o" lastModified="15861eb59c1"/>
-         <source file="..\obj\stm32f10x_dma.o" lastModified="15861eb58dd"/>
-         <source file="..\obj\system_stm32f10x.o" lastModified="15861eb526b"/>
-         <source file="..\obj\startup_stm32f103xb.o" lastModified="15861eb5426"/>
-         <source file="..\obj\Gpio.o" lastModified="15861eb57cc"/>
-         <source file="..\obj\stm32f10x_tim.o" lastModified="15861eb5198"/>
-         <source file="..\obj\Planner.o" lastModified="15861eb5490"/>
-         <source file="..\obj\System.o" lastModified="15861eb52b6"/>
-         <source file="..\obj\stm32f10x_spi.o" lastModified="15861eb5aaf"/>
-         <source file="..\obj\misc.o" lastModified="15861eb5961"/>
-         <source file="..\obj\main.o" lastModified="158625b50dc"/>
+   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -g2 -Map=PCB_Laser_Etcher.map -O0 --gc-sections --specs=nano.specs -LC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher -TC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher/STM32F103C8_FLASH.ld -g">
+      <target file="PCB_Laser_Etcher.elf" lastModified="158d95d9d33">
+         <source file="..\obj\SystemMap.o" lastModified="158d370ffcd"/>
+         <source file="..\obj\Protocol.o" lastModified="158d95d98ae"/>
+         <source file="..\obj\syscalls.o" lastModified="158d3710582"/>
+         <source file="..\obj\Stepper.o" lastModified="158d948dec4"/>
+         <source file="..\obj\stm32f10x_usart.o" lastModified="158d371046a"/>
+         <source file="..\obj\Tim.o" lastModified="158d94ecd4f"/>
+         <source file="..\obj\Dma.o" lastModified="158d3710500"/>
+         <source file="..\obj\Usart.o" lastModified="158d3aefe89"/>
+         <source file="..\obj\HardwareConfig.o" lastModified="158d37108c3"/>
+         <source file="..\obj\stm32f10x_gpio.o" lastModified="158d3710149"/>
+         <source file="..\obj\stm32f10x_rcc.o" lastModified="158d37103b6"/>
+         <source file="..\obj\Spi.o" lastModified="158d371067b"/>
+         <source file="..\obj\Motor.o" lastModified="158d37107f1"/>
+         <source file="..\obj\stm32f10x_dma.o" lastModified="158d3710711"/>
+         <source file="..\obj\system_stm32f10x.o" lastModified="158d3710059"/>
+         <source file="..\obj\startup_stm32f103xb.o" lastModified="158d371029d"/>
+         <source file="..\obj\Gpio.o" lastModified="158d3710604"/>
+         <source file="..\obj\stm32f10x_tim.o" lastModified="158d370ff87"/>
+         <source file="..\obj\Planner.o" lastModified="158d3710315"/>
+         <source file="..\obj\System.o" lastModified="158d37100a9"/>
+         <source file="..\obj\stm32f10x_spi.o" lastModified="158d371096d"/>
+         <source file="..\obj\misc.o" lastModified="158d371078d"/>
+         <source file="..\obj\main.o" lastModified="158d948dd33"/>
       </target>
    </processor>
 </history>

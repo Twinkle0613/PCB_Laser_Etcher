@@ -12,6 +12,17 @@
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_i2c.h" lastModified="15486435339">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
+      <source file="..\..\..\src\Protocol.h" lastModified="158d831570a">
+         <include file="..\..\..\src\Hardware\Usart.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_tim.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_rcc.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_dma.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_gpio.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_spi.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_usart.h"/>
+         <include file="..\..\..\src\Planner.h"/>
+         <include file="..\..\..\src\Stepper.h"/>
+      </source>
       <source file="..\..\..\STM_Config\startup\stm32f10x.h" lastModified="155f1c6b82c">
          <include file="..\..\..\STM_Config\CMSIS\core_cm3.h"/>
          <include file="..\..\..\STM_Config\startup\system_stm32f10x.h"/>
@@ -23,13 +34,16 @@
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_flash.h" lastModified="15486435315">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\src\Hardware\Tim.c" lastModified="158441b7947">
+      <source file="..\..\..\src\Hardware\Tim.c" lastModified="158d94e94fe">
          <include file="..\..\..\src\Hardware\Tim.h"/>
       </source>
-      <source file="..\..\..\src\Hardware\Motor.c" lastModified="15861e92371">
+      <source file="..\..\..\src\Hardware\Motor.c" lastModified="1586c215bda">
          <include file="..\..\..\src\Hardware\Motor.h"/>
       </source>
-      <source file="..\..\..\src\Stepper.h" lastModified="158613f2189">
+      <source file="..\..\..\src\Protocol.c" lastModified="158d95d7fb2">
+         <include file="..\..\..\src\Protocol.h"/>
+      </source>
+      <source file="..\..\..\src\Stepper.h" lastModified="158d948d863">
          <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_tim.h"/>
          <include file="..\..\..\src\Hardware\Dma.h"/>
          <include file="..\..\..\src\Hardware\Motor.h"/>
@@ -50,7 +64,7 @@
          <include file="..\..\..\STM_Config\CMSIS\core_cmInstr.h"/>
          <include file="..\..\..\STM_Config\CMSIS\core_cmFunc.h"/>
       </source>
-      <source file="..\..\..\src\Stepper.c" lastModified="158623face9">
+      <source file="..\..\..\src\Stepper.c" lastModified="158d9488729">
          <include file="..\..\..\src\Stepper.h"/>
       </source>
       <source file="..\..\..\STM_Config\startup\syscalls.c" lastModified="154af484a97">
@@ -61,8 +75,20 @@
       <source file="..\..\..\STM_Config\StdPeriph_Driver\src\stm32f10x_rcc.c" lastModified="15486435459">
          <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_rcc.h"/>
       </source>
+      <source file="..\..\..\src\Hardware\Usart.h" lastModified="158cecfe83b">
+         <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_tim.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_rcc.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_dma.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_gpio.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_spi.h"/>
+         <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_usart.h"/>
+      </source>
       <source file="..\..\..\STM_Config\CMSIS\core_cmInstr.h" lastModified="154860893a7">
          <include file="..\..\..\STM_Config\CMSIS\cmsis_gcc.h"/>
+      </source>
+      <source file="..\..\..\src\Hardware\Usart.c" lastModified="158d3aed8f1">
+         <include file="..\..\..\src\Hardware\Usart.h"/>
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_sdio.h" lastModified="1548643535e">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
@@ -86,7 +112,7 @@
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_tim.h" lastModified="15486435376">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\src\Hardware\Dma.c" lastModified="1585d872e38">
+      <source file="..\..\..\src\Hardware\Dma.c" lastModified="1586b38976e">
          <include file="..\..\..\src\Hardware\Dma.h"/>
       </source>
       <source file="..\..\..\STM_Config\startup\system_stm32f10x.h" lastModified="1548a5329a5">
@@ -144,8 +170,9 @@
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_can.h" lastModified="154864352e2">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\src\Planner.h" lastModified="15861e89b9d">
+      <source file="..\..\..\src\Planner.h" lastModified="158d36f8726">
          <include file="..\..\..\src\SystemMap.h"/>
+         <include file="..\..\..\src\System.h"/>
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_dbgmcu.h" lastModified="154864352fb">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
@@ -155,7 +182,7 @@
       </source>
       <source file="..\..\..\STM_Config\startup\startup_stm32f103xb.s" lastModified="1518acc3ee0">
       </source>
-      <source file="..\..\..\app\main.c" lastModified="158625b509e">
+      <source file="..\..\..\app\main.c" lastModified="158d945f722">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
          <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_rcc.h"/>
          <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_spi.h"/>
@@ -168,11 +195,17 @@
          <include file="..\..\..\src\Hardware\Dma.h"/>
          <include file="..\..\..\src\Hardware\Spi.h"/>
          <include file="..\..\..\src\Hardware\Motor.h"/>
+         <include file="..\..\..\src\Planner.h"/>
+         <include file="..\..\..\src\Stepper.h"/>
+         <include file="..\..\..\src\System.h"/>
+         <include file="..\..\..\src\SystemMap.h"/>
+         <include file="..\..\..\src\Hardware\Usart.h"/>
+         <include file="..\..\..\src\Protocol.h"/>
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_adc.h" lastModified="154864352d0">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\src\Planner.c" lastModified="15855feb986">
+      <source file="..\..\..\src\Planner.c" lastModified="158c9b8cc42">
          <include file="..\..\..\src\Planner.h"/>
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_bkp.h" lastModified="154864352d6">
@@ -181,13 +214,13 @@
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_dma.h" lastModified="15486435305">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_exti.h" lastModified="1548643530a">
+      <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_iwdg.h" lastModified="1548643533e">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_usart.h" lastModified="15486435381">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
-      <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_iwdg.h" lastModified="1548643533e">
+      <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_exti.h" lastModified="1548643530a">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_gpio.h" lastModified="1548643532c">
@@ -218,7 +251,7 @@
          <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_wwdg.h"/>
          <include file="..\..\..\STM_Config\StdPeriph_Driver\inc\misc.h"/>
       </source>
-      <source file="..\..\..\src\System.h" lastModified="15859625a25">
+      <source file="..\..\..\src\System.h" lastModified="158a3e03d21">
       </source>
       <source file="..\..\..\STM_Config\StdPeriph_Driver\inc\stm32f10x_crc.h" lastModified="154864352ec">
          <include file="..\..\..\STM_Config\startup\stm32f10x.h"/>

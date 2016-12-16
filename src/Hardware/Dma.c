@@ -8,7 +8,7 @@ uint8_t motorInfoBuffer[NUMBER_OF_MOTOR*2];
 void DMA1_Channel3_IRQHandler(void){
 	DMA_ClearITPendingBit(DMA1_IT_TC3);
 	triggerOutputData();
-  sendSetStep();
+    sendSetStep();
 }
 
 

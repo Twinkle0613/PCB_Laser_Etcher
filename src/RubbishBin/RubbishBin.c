@@ -110,6 +110,33 @@ void updateMotorDriveBuffer(int state){
  // }
  
  
- 
- 
+// estimateAccelerationStep
+ // printf("initialRate = %f\n",initialRate);
+  // printf("targetRate = %f\n",targetRate);
+   //float i = (initialRate + (targetRate-initialRate)/2.0);
+  // printf("i = %f\n",i);
+  // float j = targetRate/(float)acceleration;
+  // printf("j = %f\n",j);
+  // float z = j*i;
+  // printf("z = %f\n", z/2.0);
+  //return ((((targetRate+initialRate)/2.0)*(targetRate/(float)(acceleration)))/2.0);
+  // printf("return = %f\n",((targetRate*targetRate)-(initialRate*initialRate))/((float)(2.0*acceleration) ));
   
+  
+  
+  	// uint16_t checkUSART1_CR1= USART1->CR1;
+	// uint16_t checkUSART1_CR2= USART1->CR2;
+    // uint16_t checkUSART1_CR3= USART1->CR3;
+	// uint16_t checkUSART1_BRR= USART1->BRR;
+    // uint32_t checkGPIOA_CRH = GPIOA->CRH;
+    
+    
+    
+    	 //bufferHead = nextBlockIndex(bufferHead);
+	//bufferHead = nextBlockIndex(bufferHead);
+	//bufferHead = nextBlockIndex(bufferHead);
+	//fferHead = nextBlockIndex(bufferHead);
+	//blockConfig(&blockBuffer[bufferTail+3],0xe0,20000,3000,1,80000,160000,30);
+	//blockConfig(&blockBuffer[bufferTail+2],0x00,20000,3000,1,80000,160000,30);
+	//blockConfig(&blockBuffer[bufferTail+1],0xe0,20000,3000,1,80000,160000,30);
+	//blockConfig(&blockBuffer[bufferTail],0x00,50000,3000,1,80000,160000,30);

@@ -1,0 +1,65 @@
+---
+:source:
+  :path: test
+  :file: test_Planner.c
+:successes:
+- :test: test_nextBlockIndex_Index_point_to_next_block
+  :line: 23
+  :message: ''
+- :test: test_nextBlockIndex_Index_point_to_next_block_with_overflow
+  :line: 38
+  :message: ''
+- :test: test_prevBlockIndex_Index_point_to_previous_block
+  :line: 52
+  :message: ''
+- :test: test_prevBlockIndex_Index_point_to_previous_block_with_underflow
+  :line: 65
+  :message: ''
+- :test: test_planInit_initialize_the_bufferHead_bufferTail_and_nextBufferHead
+  :line: 80
+  :message: ''
+- :test: test_getBlock_to_get_the_block_when_buffer_contained_block
+  :line: 102
+  :message: ''
+- :test: test_getBlock_to_get_NULL_when_buffer_dont_have_any_block
+  :line: 119
+  :message: ''
+- :test: test_discardCurrrentBlock_if_blockBuffer_contain_block_the_buffetTail_will_be_increased
+  :line: 134
+  :message: ''
+- :test: test_discardCurrrentBlock_if_blockBuffer_doesnt_contain_block_the_buffetTail_will_remain
+  :line: 151
+  :message: ''
+- :test: test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest
+  :line: 156
+  :message: ''
+- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest
+  :line: 171
+  :message: ''
+- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest
+  :line: 183
+  :message: ''
+- :test: test_ceil_put_the_value_from_3point0_to_3point9_into_the_function_
+  :line: 195
+  :message: ''
+- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_80000_nominalRate_is_160000_finalRate_is_80000
+  :line: 223
+  :message: ''
+- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_80000_nominalRate_is_200000_finalRate_is_800
+  :line: 247
+  :message: ''
+- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_800_nominalRate_is_200000_finalRate_is_800
+  :line: 271
+  :message: ''
+- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_800_nominalRate_is_1000_finalRate_is_800
+  :line: 296
+  :message: ''
+:failures: []
+:ignores: []
+:counts:
+  :total: 17
+  :passed: 17
+  :failed: 0
+  :ignored: 0
+:stdout:
+- ''

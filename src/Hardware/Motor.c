@@ -6,9 +6,9 @@ MotorInfo* motor0;
 
 
 void motorInit(void){
-    motorX  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);
-	motorY  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);
-	motorZ  = motorConfig(MOTOR_LEFT,MOTOR_FULL_STEP);  
+    motorX  = motorConfig(MOTOR_RIGHT,MOTOR_EIGHTH_STEP);
+	motorY  = motorConfig(MOTOR_RIGHT,MOTOR_EIGHTH_STEP);
+	motorZ  = motorConfig(MOTOR_RIGHT,MOTOR_EIGHTH_STEP);
 }
 
 MotorInfo* motorConfig(uint8_t direation,uint8_t microstep){

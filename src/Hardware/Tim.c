@@ -22,8 +22,9 @@ void TimerConfig(TIM_TypeDef* TIMx,
 	else if(TIMx==TIM4){TIMx_IRQn = TIM4_IRQn;}
 	else if(TIMx==TIM5){TIMx_IRQn = TIM5_IRQn;}
 
-	NVIC_EnableIRQ(TIMx_IRQn);
+
 	NVIC_SetPriority(TIMx_IRQn,priority);
+	NVIC_EnableIRQ(TIMx_IRQn);
     TIM_TimeBaseInitTypeDef timer;
     timer.TIM_Prescaler = Prescaler;
     timer.TIM_CounterMode = CounterMode;

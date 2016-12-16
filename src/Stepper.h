@@ -31,8 +31,12 @@ extern stepper_t stExecutor;
 extern block_t *currentBlock; 
 extern uint8_t wakeUpState;
 extern uint8_t outputBits; 
+volatile extern uint8_t availableInsertBlock;
+
 void stepperInit(void);
+
 void sleep(void);
+void wakeUp(void);
 void stExecutorInitProcess(void);
 uint32_t bresenhamAlgorithm(int32_t* error,uint32_t dx,uint32_t dy, int* status);
 uint32_t iterate(int32_t* error,uint32_t dx,uint32_t dy);
@@ -44,6 +48,7 @@ uint8_t getStepStatus(int axis);
 uint8_t getMoveDireaction(int axis);
 void planningDataSending(void);
 float estimateAccelerationStep(float initialRate, float targetRate, float acceleration);
+//uint32_t estimateDeccelerationStep(void);
 void accelerateRate(void);
 void deccelerateRate(void);
 void deccelerationAbjustment(void);
@@ -51,4 +56,7 @@ void nominalRate(void);
 void initializeDecceleration(void);
 void motorRateControlProcess(void);
 void accelerateAndDeccelerateEvent(void);
+void setStepEventPerMin(uint32_t stepsPerMin);
+uint32_t setCyclePerStepEventToTimer(uint32_t cycle);
+int iterateCycleCounter(void);
 #endif // Stepper_H
