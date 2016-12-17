@@ -2,10 +2,18 @@
 #define Planner_H
 
 #include "stdint.h"
+#include "math.h"
+#include "stdio.h"
 #include "string.h"
-#include "SystemMap.h"
 #include "System.h"
+#include "Setting.h"
 #define BLOCK_BUFFER_SIZE 18
+
+
+#define max(a,b) ((a<b)?b:a)
+#define min(a,b) ((a>b)?a:b)
+#define _lround(x) (x+0.5)
+// #define _labs(x)  ((x<0)?(-x):x)
 
 typedef struct{
   int32_t position[3];             // The planner position of the tool in absolute steps. Kept separate
@@ -24,7 +32,9 @@ typedef struct {
    int32_t  stepEventCount; 
    
    // Fields used by the motion planner to manage acceleration
-   
+   float nominalSpeed;
+   float millimeters;
+   float inverseMillimeters;
    // Settings for the trapezoid generator
    uint32_t initialRate;              // The step rate at start of block  
    uint32_t finalRate;                // The step rate at end of block
@@ -58,4 +68,19 @@ float estimateAccelerationStep(float initialRate, float targetRate, float accele
 float estimateDeccelerationStep(void);
 uint32_t _ceil(float num);
 void discardCurrentBlock(void);
+
+void convertXYZMovingDistanceToStepAndStoreToArray(float x,float y,float z,int32_t target[]);
+uint8_t determineDirection(int32_t target[]);
+long int _labs (long int i);
+void calculateXYZaxisSteps(block_t* block, int32_t target[]);
+int32_t getHighestStepsInXYZsteps(block_t* block);
+void planLineBlock(float x, float y, float z, float feedRate, uint8_t InvertFeedRateMode);
+float getDeltaInMilliMeter(int32_t target, int32_t prevPosition);
+void calculateXYZDeltaInMilliMeterAndStoreToArray(int32_t target[], float delta[]);
+float getVectorLength(float delta[]); 
+float getInverse(float value);
+void estimateNominalRateAndSpeed(block_t* block,float feedRate,uint8_t InvertFeedRateMode);
+uint32_t getXYZDeltaInSteps(int32_t target[],int8_t axis);
+float getUnitVector(block_t* block,float delta[], int8_t axis);
+void calculateUnitVectorForXYZaxisAndStoreToArray(block_t* block,float delta[],float unitVector[]);
 #endif // Planner_H

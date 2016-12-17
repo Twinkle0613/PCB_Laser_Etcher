@@ -4,61 +4,112 @@
   :file: test_Planner.c
 :successes:
 - :test: test_nextBlockIndex_Index_point_to_next_block
-  :line: 23
+  :line: 24
   :message: ''
 - :test: test_nextBlockIndex_Index_point_to_next_block_with_overflow
-  :line: 38
+  :line: 39
   :message: ''
 - :test: test_prevBlockIndex_Index_point_to_previous_block
-  :line: 52
+  :line: 53
   :message: ''
 - :test: test_prevBlockIndex_Index_point_to_previous_block_with_underflow
-  :line: 65
+  :line: 66
   :message: ''
 - :test: test_planInit_initialize_the_bufferHead_bufferTail_and_nextBufferHead
-  :line: 80
+  :line: 81
   :message: ''
 - :test: test_getBlock_to_get_the_block_when_buffer_contained_block
-  :line: 102
+  :line: 103
   :message: ''
 - :test: test_getBlock_to_get_NULL_when_buffer_dont_have_any_block
-  :line: 119
+  :line: 120
   :message: ''
 - :test: test_discardCurrrentBlock_if_blockBuffer_contain_block_the_buffetTail_will_be_increased
-  :line: 134
+  :line: 135
   :message: ''
 - :test: test_discardCurrrentBlock_if_blockBuffer_doesnt_contain_block_the_buffetTail_will_remain
-  :line: 151
-  :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_75_StepZ_is_10_the_StepX_is_largest
-  :line: 156
-  :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_200_StepY_is_largest
-  :line: 171
-  :message: ''
-- :test: test_blockConfig_StepX_is_100_StepY_is_300_StepZ_is_1000_StepZ_is_largest
-  :line: 183
+  :line: 152
   :message: ''
 - :test: test_ceil_put_the_value_from_3point0_to_3point9_into_the_function_
-  :line: 195
+  :line: 196
   :message: ''
-- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_80000_nominalRate_is_160000_finalRate_is_80000
-  :line: 223
+- :test: test_convertXYZMovingDistanceToStepAndStoreToArray_when_x_is_100mm_y_is_200mm_and_z_is_300mm_the_function_will_return_x_is_20000_step_y_is_40000_step_x_is_60000_step
+  :line: 333
   :message: ''
-- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_80000_nominalRate_is_200000_finalRate_is_800
-  :line: 247
+- :test: test_convertXYZMovingDistanceToStepAndStoreToArray_when_x_is_0mm_y_is_0mm_and_z_is_300mm_the_function_will_return_x_is_0_step_y_is_0_step_x_is_60000_step
+  :line: 341
   :message: ''
-- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_800_nominalRate_is_200000_finalRate_is_800
-  :line: 271
+- :test: test_determineDirection_when_target_x_less_than_prev_x_target_the_direactionBits_is_equal_0x20
+  :line: 349
   :message: ''
-- :test: test_estimateAccelStepAndDeccelStep_when_the_initRate_is_800_nominalRate_is_1000_finalRate_is_800
-  :line: 296
+- :test: test_determineDirection_when_target_y_less_than_prev_y_target_the_direactionBits_is_equal_0x40
+  :line: 360
+  :message: ''
+- :test: test_determineDirection_when_target_z_less_than_prev_z_target_the_direactionBits_is_equal_0x80
+  :line: 371
+  :message: ''
+- :test: test_determineDirection_when_target_xyz_less_than_prev_xyz_target_the_direactionBits_is_equal_0x80
+  :line: 382
+  :message: ''
+- :test: test_labs_put_a_negative_value_into_function_it_should_the_absolute_value_
+  :line: 393
+  :message: ''
+- :test: test_calculateXYZaxisSteps_to_obtain_the_moving_step_when_the_target_x_is_100_targer_y_is_200_and_target_z_is_300
+  :line: 402
+  :message: ''
+- :test: test_calculateXYZaxisSteps_to_obtain_the_moving_step_when_the_target_x_is_100_targer_y_is_200_and_target_z_is_300_the_prev_target_xyz_are_100000
+  :line: 415
+  :message: ''
+- :test: test_getHighestStepsInXYZsteps_when_the_X_steps_is_20000_Y_steps_is_40000_and_Z_steps_is_60000_the_max_steps_is_60000
+  :line: 429
+  :message: ''
+- :test: test_getHighestStepsInXYZsteps_when_the_X_steps_is_20000_Y_steps_is_100000_and_Z_steps_is_60000_the_max_steps_is_100000
+  :line: 437
+  :message: ''
+- :test: test_getHighestStepsInXYZsteps_when_the_X_steps_is_120000_Y_steps_is_100000_and_Z_steps_is_60000_the_max_steps_is_120000
+  :line: 445
+  :message: ''
+- :test: test_planLineBlock_initially_plan_the_motor_move_in_x_is_100mm_y_is_200mm_and_z_is_300mm_with_3000_mm_per_min
+  :line: 454
+  :message: ''
+- :test: test_getDeltaInMilliMeter_put_several_input_to_test
+  :line: 470
+  :message: ''
+- :test: test_calculateXYZDeltaInMilliMeterAndStoreToArray_targetXYZ_are_20000steps_40000steps_and_60000steps_and_the_prevTargetXYZ_are_0_0_and_0
+  :line: 480
+  :message: ''
+- :test: test_calculateXYZDeltaInMilliMeterAndStoreToArray_targetXYZ_are_20000steps_40000steps_and_60000steps_and_the_prevTargetXYZ_are_100000_100000_and_100000
+  :line: 495
+  :message: ''
+- :test: test_getVectorLength_when_deltaX_is_100_deltaY_is_200_and_deltaZ_is_300_the_function_should_return_374
+  :line: 510
+  :message: ''
+- :test: test_getVectorLength_when_deltaX_is_0_deltaY_is_400_and_deltaZ_is_300_the_function_should_return_500
+  :line: 518
+  :message: ''
+- :test: test_getInverse_
+  :line: 526
+  :message: ''
+- :test: test_estimateNominalRateAndSpeed_when_the_vectorLenght_is_500mm_and_MaxStep_is_80000step
+  :line: 559
+  :message: ''
+- :test: test_estimateNominalRateAndSpeed_when_the_vectorLenght_is_509_point_902mm_and_MaxStep_is_80000step
+  :line: 599
+  :message: ''
+- :test: test_planLineBlock_move_in_the_x_axis_is_300mm_the_y_axis_is_200mm_and_z_is_100mm_
+  :line: 628
+  :message: ''
+- :test: test_getUnitVector_the_deltaX_is_300_deltaY_is_400_and_deltaZ_is_100_and_vectorLength_is_509pt109
+  :line: 648
+  :message: ''
+- :test: test_calculateUnitVectorForXYZaxisAndStoreToArray_the_deltaX_is_300_deltaY_is_400_and_deltaZ_is_100_and_vectorLength_is_509pt109
+  :line: 671
   :message: ''
 :failures: []
 :ignores: []
 :counts:
-  :total: 17
-  :passed: 17
+  :total: 34
+  :passed: 34
   :failed: 0
   :ignored: 0
 :stdout:

@@ -19,7 +19,6 @@ void dataProcess(void){
     }
     charCounter = 0;
     }else{
-     
      line[charCounter++] = character;
     }
     

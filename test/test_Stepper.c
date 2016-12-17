@@ -18,6 +18,7 @@
 #include "Spi.h"
 #include "malloc.h"
 #include "System.h"
+#include "Setting.h"
 
 
 void initMotorDriveBuffer(void){

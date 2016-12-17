@@ -14,3 +14,4 @@
 - Planner.h
 - Spi.h
 - System.h
+- Setting.h

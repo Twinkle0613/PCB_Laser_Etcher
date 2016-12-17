@@ -6,10 +6,9 @@
 #include "Planner.h"
 #include "string.h"
 #include "Tim.h"
-#include "SystemMap.h"
 #include "System.h"
 #include "Motor.h"
-
+#include "Setting.h"
 #define true 1
 #define false 0
 
