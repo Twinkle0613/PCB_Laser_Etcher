@@ -11,7 +11,7 @@
 
 
 #define max(a,b) ((a<b)?b:a)
-#define min(a,b) ((a>b)?a:b)
+#define min(a,b) ((a>b)?b:a)
 #define _lround(x) (x+0.5)
 // #define _labs(x)  ((x<0)?(-x):x)
 
@@ -33,8 +33,10 @@ typedef struct {
    
    // Fields used by the motion planner to manage acceleration
    float nominalSpeed;
+   float entrySpeed;
    float millimeters;
    float inverseMillimeters;
+   
    // Settings for the trapezoid generator
    uint32_t initialRate;              // The step rate at start of block  
    uint32_t finalRate;                // The step rate at end of block
@@ -83,4 +85,17 @@ void estimateNominalRateAndSpeed(block_t* block,float feedRate,uint8_t InvertFee
 uint32_t getXYZDeltaInSteps(int32_t target[],int8_t axis);
 float getUnitVector(block_t* block,float delta[], int8_t axis);
 void calculateUnitVectorForXYZaxisAndStoreToArray(block_t* block,float delta[],float unitVector[]);
+void blockMovingExecutionPlaning(block_t* block, float entryFactor, float exitFactor);
+float getRampStep(float initialRate, float finalRate, float acceleration);
+int32_t getNominalStep(int32_t evenStep, int32_t accelStep, int32_t deccelStep);
+float getIntersectionDistance(block_t* block);
+void ifNominatStepLessThanZeroRecaculateAccelStep(block_t* block,int32_t*nominalStep, int32_t* accelStep);
+void configDirectionBist(block_t* block, int32_t target[]);
+void saveDataToPlExecutor(float nominalSpeed,int32_t target[], float unitVector[]);
+void updatebufferHead(void);
+float _getUnitVector(float posX, float posY, float posZ, int8_t axis);
+float getCosThetaBetweenTwoVector(float unitVector1[],float unitVector2[]);
+void entrySpeedPlanning(block_t* block, float cosTheta);
+float _getCosThetaBetweenTwoVector(float unitVector1[],float unitVector2[]);
+void replanBlockBufferStructure(void);
 #endif // Planner_H

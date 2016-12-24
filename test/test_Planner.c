@@ -668,6 +668,21 @@ void test_getUnitVector_the_deltaX_is_300_deltaY_is_400_and_deltaZ_is_100_and_ve
   
 }
 
+/*
+
+       X-axis                    Y-axis                  Z-axis
+       +-------------->+         +--------------->+      +---------->+
+       0              300mm      0             400mm     0           100mm
+         deltaX = 300               deltaY = 400mm          deltaZ = 100mm
+        
+       
+       lengthVector = deltaX^2 + deltaY^2 + deltaZ^2
+       
+       unitVectorX = deltaX/lengthVector;
+       unitVectorY = deltaY/lengthVector;
+       unitVectorZ = deltaZ/lengthVector;
+     
+*/
 void test_calculateUnitVectorForXYZaxisAndStoreToArray_the_deltaX_is_300_deltaY_is_400_and_deltaZ_is_100_and_vectorLength_is_509pt109(void){
   int32_t target[3];
   float delta[3];
@@ -687,4 +702,869 @@ void test_calculateUnitVectorForXYZaxisAndStoreToArray_the_deltaX_is_300_deltaY_
   TEST_ASSERT_EQUAL_FLOAT(0.58835,unitVector[X_AXIS]);
   TEST_ASSERT_EQUAL_FLOAT(0.78446,unitVector[Y_AXIS]);
   TEST_ASSERT_EQUAL_FLOAT(0.196116,unitVector[Z_AXIS]); 
+}
+
+void test_planLineBlock_put_Moving_X_axis_is_300_Y_axis_is_400_and_Z_axis_is_100_(void){
+  block_t *block = &blockBuffer[bufferHead];
+  planLineBlock(300,400,100,100,0);
+  TEST_ASSERT_EQUAL(0x00,block->directionBits);
+  TEST_ASSERT_EQUAL_FLOAT(509.902,block->millimeters);
+  TEST_ASSERT_FLOAT_WITHIN(0.00002,0.0019611,block->inverseMillimeters);
+  TEST_ASSERT_EQUAL(60000,block->steps[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,block->steps[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,block->steps[Z_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,block->stepEventCount);
+  TEST_ASSERT_EQUAL(15690,block->nominalRate);
+  TEST_ASSERT_EQUAL(100,block->nominalSpeed); 
+  TEST_ASSERT_EQUAL(0,bufferTail);
+  TEST_ASSERT_EQUAL(1,bufferHead);
+  TEST_ASSERT_EQUAL(2,nextBufferHead);
+  TEST_ASSERT_EQUAL_FLOAT(0.58835,plExecutor.previousUnitVec[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.78446,plExecutor.previousUnitVec[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.196116,plExecutor.previousUnitVec[Z_AXIS]);
+  TEST_ASSERT_EQUAL(60000,plExecutor.position[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,plExecutor.position[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,plExecutor.position[Z_AXIS]);
+  TEST_ASSERT_EQUAL(100,plExecutor.previousNominalSpeed);
+}
+
+
+
+
+   
+/*
+          acceleration Step                decceleration Step
+                   |                            |
+                   |   - <---160000 step/min    |-  <---160000 step/min
+                   |  /|                        | \
+                   | / |                        |  \
+80000 step/min---> |/  |                        |   \  <--- 80000 step/min
+                   |   |                        |   |    
+                   |   |                        |   |  
+                   --------------->             ------------>
+                       ^                            ^
+                      250                          250
+*/
+      
+void test_getRampStep_initialRate_is_80000_and_targeRate_is_160000_and_acceleration_is_36000mm_per_min_square(void){
+  
+  block_t *block = &blockBuffer[bufferHead];
+  float accelStep = _ceil(getRampStep(80000,100000,ACCELERATION*STEP_PER_MM));
+  float deccelStep = _ceil(getRampStep(100000,80000,-ACCELERATION*STEP_PER_MM));
+  TEST_ASSERT_EQUAL(250,accelStep);
+  TEST_ASSERT_EQUAL(250,deccelStep);
+}
+
+void test_getNominalStep_the_function_is_tested_by_putting_some_value(void){
+  TEST_ASSERT_EQUAL(5000,getNominalStep(8000,1000,2000));
+  TEST_ASSERT_EQUAL(2000,getNominalStep(8000,1000,5000));
+  TEST_ASSERT_EQUAL(0,getNominalStep(8000,3000,5000));
+  TEST_ASSERT_EQUAL(-3000,getNominalStep(8000,3000,8000));
+}
+
+/*       
+   Condition: the FinalRate is equal the InitialRate
+                          + <- some maximum rate we don't care about
+                         /|\
+                        / | \                    
+       initial_rate -> +  |  + <- final_rate     
+                       |  |  |                   
+                       +--+--+                   
+                          ^  ^                   
+                          |  |                   
+      intersection_distance  distance  
+*/
+
+void test_getIntersectionDistance_put_initialRate_and_finalRate_is_equal_80000_and_distance_is_change(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->initialRate = 80000;
+  block->finalRate = 80000;
+  block->stepEventCount = 300;
+  //printf("intersectionDistance = %f\n",getIntersectionDistance(block));
+  TEST_ASSERT_EQUAL_FLOAT(150,_ceil(getIntersectionDistance(block)));
+  block->stepEventCount = 500;
+  TEST_ASSERT_EQUAL_FLOAT(250,_ceil(getIntersectionDistance(block)));
+  block->stepEventCount = 200;
+  TEST_ASSERT_EQUAL_FLOAT(100,_ceil(getIntersectionDistance(block)));
+  block->stepEventCount = 50;
+  TEST_ASSERT_EQUAL_FLOAT(25,_ceil(getIntersectionDistance(block)));
+  block->stepEventCount = 15;
+  TEST_ASSERT_EQUAL_FLOAT(8,_ceil(getIntersectionDistance(block)));
+  // printf("value = %f\n",ceil(getIntersectionDistance(80000,80000,ACCELERATION*STEP_PER_MM,-10)));
+  // TEST_ASSERT_EQUAL_FLOAT(-5.0,ceil(getIntersectionDistance(80000,80000,ACCELERATION*STEP_PER_MM,-10)));
+}
+
+/*
+  Condition: the FinalRate is much higher than the InitialRate
+                              + <- some maximum rate we don't care about
+                             /|\
+                           /  | \
+                         /    |  + <- final_rate
+       initial_rate -> +      |  |
+                       |      |  |
+                       |      |  |
+                       +------+--+ 
+                              ^  ^                   
+                              |  |                   
+          intersection_distance  distance     
+      when the intersection disctance is more than the stepEventCount,
+      the intersection disctance will equal to stepEventCount.
+*/
+void xtest_getIntersectionDistance_when_finalRate_is_much_higher_than_initialRate_(void){
+    block_t *block = &blockBuffer[bufferHead];
+  block->initialRate = 80000;
+  block->stepEventCount = 500;
+  block->finalRate = 90000;
+  TEST_ASSERT_EQUAL_FLOAT(310,_ceil(getIntersectionDistance(block)));
+  block->finalRate = 100000;
+  TEST_ASSERT_EQUAL_FLOAT(375,_ceil(getIntersectionDistance(block)));
+  block->finalRate = 130000;
+  TEST_ASSERT_EQUAL_FLOAT(500,_ceil(getIntersectionDistance(block)));
+  block->finalRate = 150000;
+  TEST_ASSERT_EQUAL_FLOAT(500,_ceil(getIntersectionDistance(block)));
+}
+
+/*
+  Condition: the FinalRate is much less than the InitialRate
+                             
+                          +
+                         /|\ 
+                        / | \
+                       +  |  \
+       initial_rate -> |  |   + <- final_rate
+                       |  |   |
+                       |  |   |
+                       +--+---+ 
+                          ^   ^                   
+                          |  |                   
+     intersection_distance  distance     
+      when the intersection disctance is less than the stepEventCount,
+      the intersection disctance will equal to 0.
+*/
+void test_getIntersectionDistance_when_finalRate_is_much_less_than_initialRate_(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->finalRate = 80000;
+  block->stepEventCount = 500;
+  block->initialRate = 90000;
+  TEST_ASSERT_EQUAL_FLOAT(191,_ceil(getIntersectionDistance(block)));
+  block->initialRate = 100000;
+  TEST_ASSERT_EQUAL_FLOAT(125,_ceil(getIntersectionDistance(block)));
+  block->initialRate = 130000;
+  TEST_ASSERT_EQUAL_FLOAT(0,_ceil(getIntersectionDistance(block)));
+  block->initialRate = 150000;
+  TEST_ASSERT_EQUAL_FLOAT(0,_ceil(getIntersectionDistance(block)));
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.8
+  exitFactor = 0.8
+                              +------------------+ <-nominalRate
+                             /|                  | \
+                           /  |                  |  \
+entryFactor*nominalRate->+    |                  |   +<-exitFactor*nominalRate
+                         |    |                  |   |
+                         +----+------------------+---+ <- stepEventCount
+                              ^                  ^
+                              |                  |
+                  accelerateUntil    deccelerateAfter
+
+*/
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_and_exitFactor_is_0pts8(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.8,0.8);
+  TEST_ASSERT_EQUAL(80000,block->initialRate);
+  TEST_ASSERT_EQUAL(80000,block->finalRate);
+  TEST_ASSERT_EQUAL(250,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(750,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.5
+  exitFactor = 0.8
+                              +------------------+ <-nominalRate
+                             /|                  | \
+                           /  |                  |  \
+entryFactor*nominalRate->+    |                  |   +<-exitFactor*nominalRate
+                         |    |                  |   |
+                         +----+------------------+---+ <- stepEventCount
+                              ^                  ^
+                              |                  |
+                  accelerateUntil    deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts8(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.5,0.8);
+  TEST_ASSERT_EQUAL(50000,block->initialRate);
+  TEST_ASSERT_EQUAL(80000,block->finalRate);
+  TEST_ASSERT_EQUAL(521,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(750,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.8
+  exitFactor = 0.5
+                              +------------------+ <-nominalRate
+                             /|                  | \
+                           /  |                  |  \
+entryFactor*nominalRate->+    |                  |   +<-exitFactor*nominalRate
+                         |    |                  |   |
+                         +----+------------------+---+ <- stepEventCount
+                              ^                  ^
+                              |                  |
+                  accelerateUntil    deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts8_and_exitFactor_is_0pts5(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.8,0.5);
+  TEST_ASSERT_EQUAL(80000,block->initialRate);
+  TEST_ASSERT_EQUAL(50000,block->finalRate);
+  TEST_ASSERT_EQUAL(250,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(479,block->deccelerateAfter);
+}
+
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.5
+  exitFactor = 0.5
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts5(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.5,0.5);
+  TEST_ASSERT_EQUAL(50000,block->initialRate);
+  TEST_ASSERT_EQUAL(50000,block->finalRate);
+  TEST_ASSERT_EQUAL(500,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(500,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.5
+  exitFactor = 0.2
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts2(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.5,0.2);
+  TEST_ASSERT_EQUAL(50000,block->initialRate);
+  TEST_ASSERT_EQUAL(20000,block->finalRate);
+  TEST_ASSERT_EQUAL(428,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(428,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.5
+  exitFactor = 0.01
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts01(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.5,0.01);
+  TEST_ASSERT_EQUAL(50000,block->initialRate);
+  TEST_ASSERT_EQUAL(1000,block->finalRate);
+  TEST_ASSERT_EQUAL(414,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(414,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 1.3
+  exitFactor = 0.01
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_150000_entryFactor_is_1pts3_and_exitFactor_is_0pts01(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 150000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.867,0.0067);
+  TEST_ASSERT_EQUAL(130050,block->initialRate);
+  TEST_ASSERT_EQUAL(1005,block->finalRate);
+  TEST_ASSERT_EQUAL(0,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(0,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.2
+  exitFactor = 0.5
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts2_and_exitFactor_is_0pts5(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.2,0.5);
+  TEST_ASSERT_EQUAL(20000,block->initialRate);
+  TEST_ASSERT_EQUAL(50000,block->finalRate);
+  TEST_ASSERT_EQUAL(573,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(573,block->deccelerateAfter);
+}
+
+
+/*
+  nominalRate = 100000
+  entryFactor = 0.2
+  exitFactor = 0.5
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts01_and_exitFactor_is_0pts5(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 100000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.01,0.5);
+  TEST_ASSERT_EQUAL(1000,block->initialRate);
+  TEST_ASSERT_EQUAL(50000,block->finalRate);
+  TEST_ASSERT_EQUAL(587,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(587,block->deccelerateAfter);
+}
+
+/*
+  nominalRate = 150000
+  entryFactor = 0.1
+  exitFactor = 0.9
+                              + <-nominalRate
+                             /|\
+                           /  | \
+entryFactor*nominalRate->+    |  +<-exitFactor*nominalRate
+                         |    |  |
+                         +----+--+ <- stepEventCount
+                              ^       
+                              |            
+            accelerateUntil  and  deccelerateAfter
+
+*/
+void test_blockMovingExecutionPlaning_nominalRate_is_150000_entryFactor_is_0pts01_and_exitFactor_is_0pts9(void){
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalRate = 150000;
+  block->stepEventCount = 1000;
+  blockMovingExecutionPlaning(block,0.01,0.9);
+  TEST_ASSERT_EQUAL(1500,block->initialRate);
+  TEST_ASSERT_EQUAL(135000,block->finalRate);
+  TEST_ASSERT_EQUAL(1000,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(1000,block->deccelerateAfter);
+}
+
+
+void test__getUnitVector_the_posX_is_3_posY_is_4_and_posZ_is_5(void){
+  TEST_ASSERT_EQUAL_FLOAT(0.42426,_getUnitVector(3,4,5,X_AXIS));
+  TEST_ASSERT_EQUAL_FLOAT(0.56569,_getUnitVector(3,4,5,Y_AXIS));
+  TEST_ASSERT_EQUAL_FLOAT(0.70711,_getUnitVector(3,4,5,Z_AXIS));
+}
+/*
+             vectorA (8,0,0)  vectorB (5,0,0)
+          ----------------->+----------------->
+
+*/
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y0Z0_and_vectorB_is_X5Y0Z0(void){
+  float unitVectorA[3];
+  float unitVectorB[3];
+  unitVectorA[X_AXIS] = _getUnitVector(8,0,0,X_AXIS);
+  unitVectorA[Y_AXIS] = _getUnitVector(8,0,0,Y_AXIS);
+  unitVectorA[Z_AXIS] = _getUnitVector(8,0,0,Z_AXIS);
+  unitVectorB[X_AXIS] = _getUnitVector(5,0,0,X_AXIS);
+  unitVectorB[Y_AXIS] = _getUnitVector(5,0,0,Y_AXIS);
+  unitVectorB[Z_AXIS] = _getUnitVector(5,0,0,Z_AXIS);
+  TEST_ASSERT_EQUAL_FLOAT(1,unitVectorA[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorA[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorA[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(1,unitVectorB[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorB[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorB[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(-1,getCosThetaBetweenTwoVector(unitVectorA,unitVectorB));
+}
+
+/*            
+                               
+                              /
+                    vectorB /
+                          /
+                        /
+                      /
+                    / ) theta
+                   +------------------>
+                        vetorA 
+            
+*/
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y0Z0_and_vectorB_is_X4Y3Z0(void){
+  float unitVectorA[3];
+  float unitVectorB[3];
+  unitVectorA[X_AXIS] = _getUnitVector(8,0,0,X_AXIS);
+  unitVectorA[Y_AXIS] = _getUnitVector(8,0,0,Y_AXIS);
+  unitVectorA[Z_AXIS] = _getUnitVector(8,0,0,Z_AXIS);
+  unitVectorB[X_AXIS] = _getUnitVector(4,3,0,X_AXIS);
+  unitVectorB[Y_AXIS] = _getUnitVector(4,3,0,Y_AXIS);
+  unitVectorB[Z_AXIS] = _getUnitVector(4,3,0,Z_AXIS);
+  TEST_ASSERT_EQUAL_FLOAT(1,unitVectorA[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorA[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorA[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.8,unitVectorB[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.6,unitVectorB[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorB[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(-0.8,getCosThetaBetweenTwoVector(unitVectorA,unitVectorB));
+}
+
+
+/*
+
+
+
+           vectorA       vectorB
+     <--------------+-------------->
+
+
+
+*/
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y0Z0_and_vectorB_is_Xnegate2Y0Z0(void){
+  float unitVectorA[3];
+  float unitVectorB[3];
+  unitVectorA[X_AXIS] = _getUnitVector(8,0,0,X_AXIS);
+  unitVectorA[Y_AXIS] = _getUnitVector(8,0,0,Y_AXIS);
+  unitVectorA[Z_AXIS] = _getUnitVector(8,0,0,Z_AXIS);
+  unitVectorB[X_AXIS] = _getUnitVector(-2,0,0,X_AXIS);
+  unitVectorB[Y_AXIS] = _getUnitVector(-2,0,0,Y_AXIS);
+  unitVectorB[Z_AXIS] = _getUnitVector(-2,0,0,Z_AXIS);
+  TEST_ASSERT_EQUAL_FLOAT(1,unitVectorA[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorA[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorA[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(-1,unitVectorB[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorB[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,unitVectorB[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(1,getCosThetaBetweenTwoVector(unitVectorA,unitVectorB));
+}
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y10Z2_and_vectorB_is_X3Y4Z5(void){
+  float unitVectorA[3];
+  float unitVectorB[3];
+  unitVectorA[X_AXIS] = _getUnitVector(8,10,2,X_AXIS);
+  unitVectorA[Y_AXIS] = _getUnitVector(8,10,2,Y_AXIS);
+  unitVectorA[Z_AXIS] = _getUnitVector(8,10,2,Z_AXIS);
+  unitVectorB[X_AXIS] = _getUnitVector(3,4,5,X_AXIS);
+  unitVectorB[Y_AXIS] = _getUnitVector(3,4,5,Y_AXIS);
+  unitVectorB[Z_AXIS] = _getUnitVector(3,4,5,Z_AXIS);
+  TEST_ASSERT_EQUAL_FLOAT(0.61721,unitVectorA[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.77152,unitVectorA[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.154303,unitVectorA[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.42426,unitVectorB[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.56569,unitVectorB[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.70711,unitVectorB[Z_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(-0.80740,getCosThetaBetweenTwoVector(unitVectorA,unitVectorB));
+}
+
+void test_entrySpeedPlanning_the_enntry_speed_first_block_is_0(void){
+  block_t *block = &blockBuffer[bufferHead];
+  TEST_ASSERT_EQUAL(bufferHead,bufferTail);
+  entrySpeedPlanning(block,0);
+  TEST_ASSERT_EQUAL_FLOAT(0,block->entrySpeed); 
+}
+
+/*
+                                         
+                                    firstBlock          secondBlock
+                              +------------------+--+--+--------------+ 
+                             /|                  |  |  |              |\
+                           /  |                  |  |  |              | \    
+entryFactor*nominalRate->+    |                  |  |  |              |  + <-exitFactor*nominalRate
+                         |    |                  |  |  |              |  | 
+                         +----+------------------+--+--+-----------------+
+                  
+          
+*/
+
+void test_entrySpeedPlanning_when_add_in_a_block_which_the_vector_is_same_with_previous_block_and_previousNominalSpeed_is_higher_than_the_current_nominalSpeed(void){
+  updatebufferHead();
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalSpeed = 100;
+  plExecutor.previousNominalSpeed = 150;
+  entrySpeedPlanning(block,-1);
+  TEST_ASSERT_EQUAL_FLOAT(100,block->entrySpeed);
+}
+
+/*
+                                                            SecondBlock
+                                                        +--------------+
+                                    firstBlock        / |              |\
+                              +------------------+---+  |              | \
+                             /|                  |   |  |              |  \
+                           /  |                  |   |  |              |   \    
+entryFactor*nominalRate->+    |                  |   |  |              |    + <-exitFactor*nominalRate
+                         |    |                  |   |  |              |    | 
+                         +----+------------------+---+--+--------------+----+
+                  
+          
+*/
+void test_entrySpeedPlanning_when_add_in_a_block_which_the_vector_is_same_with_previous_block_and_previousNominalSpeed_is_less_than_the_current_nominalSpeed(void){
+  updatebufferHead();
+  block_t *block = &blockBuffer[bufferHead];
+  block->nominalSpeed = 100;
+  plExecutor.previousNominalSpeed = 80;
+  entrySpeedPlanning(block,-1);
+  TEST_ASSERT_EQUAL_FLOAT(80,block->entrySpeed);
+}
+
+void test_planLineBlock_and_entrySpeedPlanning_put_Moving_X_axis_is_300_Y_axis_is_400_and_Z_axis_is_100_(void){
+  
+  block_t *block = &blockBuffer[bufferHead];
+  planLineBlock(300,400,100,100,0);
+  TEST_ASSERT_EQUAL(0x00,block->directionBits);
+  TEST_ASSERT_EQUAL_FLOAT(509.902,block->millimeters);
+  TEST_ASSERT_FLOAT_WITHIN(0.00002,0.0019611,block->inverseMillimeters);
+  TEST_ASSERT_EQUAL(60000,block->steps[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,block->steps[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,block->steps[Z_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,block->stepEventCount);
+  TEST_ASSERT_EQUAL(15690,block->nominalRate);
+  TEST_ASSERT_EQUAL(100,block->nominalSpeed); 
+  TEST_ASSERT_EQUAL(0,block->entrySpeed); 
+  TEST_ASSERT_EQUAL(0,bufferTail);
+  TEST_ASSERT_EQUAL(1,bufferHead);
+  TEST_ASSERT_EQUAL(2,nextBufferHead);
+  TEST_ASSERT_EQUAL_FLOAT(0.58835,plExecutor.previousUnitVec[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.78446,plExecutor.previousUnitVec[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.196116,plExecutor.previousUnitVec[Z_AXIS]);
+  TEST_ASSERT_EQUAL(60000,plExecutor.position[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,plExecutor.position[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,plExecutor.position[Z_AXIS]);
+  TEST_ASSERT_EQUAL(100,plExecutor.previousNominalSpeed);
+  
+  
+  block = &blockBuffer[bufferHead];
+  planLineBlock(400,400,100,100,0);
+  TEST_ASSERT_EQUAL_FLOAT(100,block->millimeters);
+  TEST_ASSERT_FLOAT_WITHIN(0.00002,0.01,block->inverseMillimeters);
+  TEST_ASSERT_EQUAL(20000,block->steps[X_AXIS]); 
+  TEST_ASSERT_EQUAL(0,block->steps[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(0,block->steps[Z_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,block->stepEventCount);
+  TEST_ASSERT_EQUAL(20000,block->nominalRate);
+  TEST_ASSERT_EQUAL(100,block->nominalSpeed); 
+  TEST_ASSERT_EQUAL(100,block->entrySpeed); 
+  TEST_ASSERT_EQUAL(0,bufferTail);
+  TEST_ASSERT_EQUAL(2,bufferHead);
+  TEST_ASSERT_EQUAL(3,nextBufferHead);
+  TEST_ASSERT_EQUAL_FLOAT(1,plExecutor.previousUnitVec[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,plExecutor.previousUnitVec[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,plExecutor.previousUnitVec[Z_AXIS]);
+  TEST_ASSERT_EQUAL(80000,plExecutor.position[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,plExecutor.position[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,plExecutor.position[Z_AXIS]);
+  TEST_ASSERT_EQUAL(100,plExecutor.previousNominalSpeed);
+  
+  block = &blockBuffer[bufferHead];
+  planLineBlock(500,400,100,90,0);
+  TEST_ASSERT_EQUAL_FLOAT(100,block->millimeters);
+  TEST_ASSERT_FLOAT_WITHIN(0.00002,0.01,block->inverseMillimeters);
+  TEST_ASSERT_EQUAL(20000,block->steps[X_AXIS]); 
+  TEST_ASSERT_EQUAL(0,block->steps[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(0,block->steps[Z_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,block->stepEventCount);
+  TEST_ASSERT_EQUAL(18000,block->nominalRate);
+  TEST_ASSERT_EQUAL(90,block->nominalSpeed); 
+  TEST_ASSERT_EQUAL(90,block->entrySpeed); 
+  TEST_ASSERT_EQUAL(0,bufferTail);
+  TEST_ASSERT_EQUAL(3,bufferHead);
+  TEST_ASSERT_EQUAL(4,nextBufferHead);
+  TEST_ASSERT_EQUAL_FLOAT(1,plExecutor.previousUnitVec[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,plExecutor.previousUnitVec[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0,plExecutor.previousUnitVec[Z_AXIS]);
+  TEST_ASSERT_EQUAL(100000,plExecutor.position[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,plExecutor.position[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,plExecutor.position[Z_AXIS]);
+  TEST_ASSERT_EQUAL(90,plExecutor.previousNominalSpeed);
+}
+
+/*
+
+
+
+
+                              +------------------+ <-nominalRate
+                             /|                  | \
+                           /  |                  |  \
+entryFactor*nominalRate->+    |                  |   +<-exitFactor*nominalRate
+                         |    |                  |   |
+                         +----+------------------+---+ <- stepEventCount
+                              ^                  ^
+                              |                  |
+                  accelerateUntil    deccelerateAfter
+*/
+void test_planLineBlock_replanBlockBufferStructure_only_one_block_is_added_into_BlockBuffer_to_do_blockMovingExecutionPlaning(void){
+  block_t *block = &blockBuffer[bufferHead];
+  planLineBlock(300,400,100,100,0);
+  
+  TEST_ASSERT_EQUAL(0x00,block->directionBits);
+  TEST_ASSERT_EQUAL_FLOAT(509.902,block->millimeters);
+  TEST_ASSERT_FLOAT_WITHIN(0.00002,0.0019611,block->inverseMillimeters);
+  TEST_ASSERT_EQUAL(60000,block->steps[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,block->steps[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,block->steps[Z_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,block->stepEventCount);
+  TEST_ASSERT_EQUAL(15690,block->nominalRate);
+  TEST_ASSERT_EQUAL(100,block->nominalSpeed); 
+  TEST_ASSERT_EQUAL(0,block->entrySpeed); 
+  TEST_ASSERT_EQUAL(0,bufferTail);
+  TEST_ASSERT_EQUAL(1,bufferHead);
+  TEST_ASSERT_EQUAL(2,nextBufferHead);
+  TEST_ASSERT_EQUAL_FLOAT(0.58835,plExecutor.previousUnitVec[X_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.78446,plExecutor.previousUnitVec[Y_AXIS]);
+  TEST_ASSERT_EQUAL_FLOAT(0.196116,plExecutor.previousUnitVec[Z_AXIS]);
+  TEST_ASSERT_EQUAL(60000,plExecutor.position[X_AXIS]); 
+  TEST_ASSERT_EQUAL(80000,plExecutor.position[Y_AXIS]); 
+  TEST_ASSERT_EQUAL(20000,plExecutor.position[Z_AXIS]);
+  TEST_ASSERT_EQUAL(100,plExecutor.previousNominalSpeed);
+  TEST_ASSERT_EQUAL(0,block->initialRate);
+  TEST_ASSERT_EQUAL(0,block->finalRate);
+  TEST_ASSERT_EQUAL(18,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(79982,block->deccelerateAfter); 
+}
+
+/*
+                                   firstBlock          secondBlock      
+ nominalSpeed = 100(mm/min)-> +------------------+--+--+--------------+ 
+                             /|                  |  |  |              |\
+                           /  |                  |  |  |              | \    
+             entrySpeed->+    |                  |  |  |              |  + <-exitSpeed
+                         |    |                  |  |  |              |  | 
+                         +----+------------------+--+--+-----------------+
+       
+       
+       
+                                     (stpes/min)      SecondBlock
+                               nominalRate = 20000-> +--+--------------+
+                   (stpes/min)        firstBlock     |  |              |\
+        nominalRate = 15690-> +------------------+---+  |              | \
+                             /|                  |   |  |              |  \
+                           /  |                  |   |  |              |   \    
+entryFactor*nominalRate->+    |                  |   |  |              |    + <-exitFactor*nominalRate
+                         |    |                  |   |  |              |    | 
+                         +----+------------------+---+--+--------------+----+
+                         <--------------------------><---------------------->
+                                80000 steps                  20000 steps
+      
+
+*/
+void test_planLineBlock_replanBlockBufferStructure_two_block_are_added_with_same_nominal_speed_into_BlockBuffer_to_do_blockMovingExecutionPlaning(void){
+  block_t *block = &blockBuffer[bufferTail];
+  planLineBlock(300,400,100,100,0);
+  
+  TEST_ASSERT_EQUAL(15690,block->nominalRate);
+  TEST_ASSERT_EQUAL(0,block->initialRate);
+  TEST_ASSERT_EQUAL(0,block->finalRate);
+  TEST_ASSERT_EQUAL(18,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(79982,block->deccelerateAfter); 
+  
+  planLineBlock(400,400,100,100,0);
+  
+  block_t *block1 = &blockBuffer[bufferTail];
+  block_t *block2 = &blockBuffer[bufferTail+1];
+  TEST_ASSERT_EQUAL(0,block1->initialRate);
+  TEST_ASSERT_EQUAL(80000,block1->stepEventCount);
+  TEST_ASSERT_EQUAL(0,block1->entrySpeed);
+  TEST_ASSERT_EQUAL(15690,block1->nominalRate);
+  TEST_ASSERT_EQUAL(15690,block1->finalRate);
+  TEST_ASSERT_EQUAL(18,block1->accelerateUntil);
+  TEST_ASSERT_EQUAL(80000,block1->deccelerateAfter); 
+  
+  TEST_ASSERT_EQUAL(20000,block2->stepEventCount);
+  TEST_ASSERT_EQUAL(100,block2->entrySpeed);
+  TEST_ASSERT_EQUAL(20000,block2->initialRate);
+  TEST_ASSERT_EQUAL(20000,block2->nominalRate);
+  TEST_ASSERT_EQUAL(0,block2->finalRate);
+  TEST_ASSERT_EQUAL(0,block2->accelerateUntil);
+  TEST_ASSERT_EQUAL(19972,block2->deccelerateAfter);
+}
+
+/*
+
+                                    firstBlock        
+  nominalSpeed = 100(mm/min)->+------------------+---+ 
+                             /|                  |   |\  SecondBlock
+                           /  |                  |   | +--------------+ <- nominalSpeed = 90(mm/min)
+             entrySpeed->+    |                  |   | |              |\ 
+                         |    |                  |   | |              | \   
+                         +----+------------------+---+--+-------------+--+<-exitSpeed
+                  
+                                           
+                                                            SecondBlock
+                   (stpes/min)        firstBlock      +--+--------------+ <- nominalRate = 18000(stpes/min)
+        nominalRate = 15690-> +------------------+   |  |              | \
+                             /|                  | \ |  |              |  \
+                           /  |                  |  \|  |              |   \    
+entryFactor*nominalRate->+    |                  |   +  |              |    + <-exitFactor*nominalRate
+                         |    |                  |   |  |              |    | 
+                         +----+------------------+---+--+--------------+----+
+                         <--------------------------><---------------------->
+                                80000 steps                  20000 steps
+      
+
+*/
+
+void test_planLineBlock_replanBlockBufferStructure_two_block_is_added_with_different_nominal_speed_NominalSpeed_of_Firblock_is_higher_than_SecBlock(void){
+  block_t *block = &blockBuffer[bufferTail];
+  planLineBlock(300,400,100,100,0);
+  
+  TEST_ASSERT_EQUAL(15690,block->nominalRate);
+  TEST_ASSERT_EQUAL(0,block->initialRate);
+  TEST_ASSERT_EQUAL(0,block->finalRate);
+  TEST_ASSERT_EQUAL(18,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(79982,block->deccelerateAfter); 
+  
+  planLineBlock(400,400,100,90,0);
+  
+  block_t *block1 = &blockBuffer[bufferTail];
+  block_t *block2 = &blockBuffer[bufferTail+1];
+  TEST_ASSERT_EQUAL(0,block1->initialRate);
+  TEST_ASSERT_EQUAL(80000,block1->stepEventCount);
+  TEST_ASSERT_EQUAL(0,block1->entrySpeed);
+  TEST_ASSERT_EQUAL(15690,block1->nominalRate);
+  TEST_ASSERT_EQUAL(14121,block1->finalRate);
+  TEST_ASSERT_EQUAL(18,block1->accelerateUntil);
+  TEST_ASSERT_EQUAL(79996,block1->deccelerateAfter); 
+  
+  TEST_ASSERT_EQUAL(20000,block2->stepEventCount);
+  TEST_ASSERT_EQUAL(90,block2->entrySpeed);
+  TEST_ASSERT_EQUAL(18000,block2->initialRate);
+  TEST_ASSERT_EQUAL(18000,block2->nominalRate);
+  TEST_ASSERT_EQUAL(0,block2->finalRate);
+  TEST_ASSERT_EQUAL(0,block2->accelerateUntil);
+  TEST_ASSERT_EQUAL(19977,block2->deccelerateAfter);
+}
+
+
+/*
+                                                            SecondBlock
+                                                        +--------------+<-nominalSpeed = 120(mm/min)->
+                                    firstBlock        / |              |\
+  nominalSpeed = 100(mm/min)->+------------------+---+  |              | \
+                             /|                  |   |  |              |  \
+                           /  |                  |   |  |              |   \    
+entryFactor*nominalRate->+    |                  |   |  |              |    + <-exitFactor*nominalRate
+                         |    |                  |   |  |              |    | 
+                         +----+------------------+---+--+--------------+----+
+      
+                                                           SecondBlock
+                                                        +--------------+ <-nominalRate = 24000(stpes/min)
+                                                      / |              |\
+                   (stpes/min)        firstBlock     +  +              + + <-nominalRate = 20000(stpes/min)
+        nominalRate = 15690-> +------------------+---|  |              |  \
+                             /|                  |   |  |              |   \
+                           /  |                  |   |  |              |    \    
+entryFactor*nominalRate->+    |                  |   |  |              |    + <-exitFactor*nominalRate
+                         |    |                  |   |  |              |    | 
+                         +----+------------------+---+--+--------------+----+
+                         <--------------------------><---------------------->
+                                80000 steps                  20000 steps
+         
+      
+*/
+void test_planLineBlock_replanBlockBufferStructure_two_block_is_added_with_different_nominal_speed_NominalSpeed_of_Firblock_is_less_than_SecBlock(void){
+  block_t *block = &blockBuffer[bufferTail];
+  planLineBlock(300,400,100,100,0);
+  
+  TEST_ASSERT_EQUAL(15690,block->nominalRate);
+  TEST_ASSERT_EQUAL(0,block->initialRate);
+  TEST_ASSERT_EQUAL(0,block->finalRate);
+  TEST_ASSERT_EQUAL(18,block->accelerateUntil);
+  TEST_ASSERT_EQUAL(79982,block->deccelerateAfter); 
+  planLineBlock(400,400,100,120,0);
+  
+  block_t *block1 = &blockBuffer[bufferTail];
+  block_t *block2 = &blockBuffer[bufferTail+1];
+  TEST_ASSERT_EQUAL(0,block1->initialRate);
+  TEST_ASSERT_EQUAL(80000,block1->stepEventCount);
+  TEST_ASSERT_EQUAL(0,block1->entrySpeed);
+  TEST_ASSERT_EQUAL(15690,block1->nominalRate);
+  TEST_ASSERT_EQUAL(15690,block1->finalRate);
+  TEST_ASSERT_EQUAL(18,block1->accelerateUntil);
+  TEST_ASSERT_EQUAL(80000,block1->deccelerateAfter); 
+  
+  TEST_ASSERT_EQUAL(20000,block2->stepEventCount);
+  TEST_ASSERT_EQUAL(100,block2->entrySpeed);
+  TEST_ASSERT_EQUAL(20000,block2->initialRate);
+  TEST_ASSERT_EQUAL(24000,block2->nominalRate);
+  TEST_ASSERT_EQUAL(0,block2->finalRate);
+  TEST_ASSERT_EQUAL(13,block2->accelerateUntil);
+  TEST_ASSERT_EQUAL(19960,block2->deccelerateAfter);
 }

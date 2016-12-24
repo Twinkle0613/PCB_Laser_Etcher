@@ -93,6 +93,9 @@
 - :test: test_setStepEventPerMin_the_steps_per_min_is_80000_the_cycle_will_be_54000
   :line: 639
   :message: ''
+- :test: test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800
+  :line: 646
+  :message: ''
 - :test: test_acceleratreRate_when_currentRate_is_160000_the_currentRate_does_not_increase_any_more
   :line: 711
   :message: ''
@@ -127,15 +130,12 @@
   :line: 859
   :message: ''
 :failures:
-- :test: test_setStepEventPerMin_the_steps_per_min_is_100_less_than_800_and_steps_per_min_will_become_800
-  :line: 648
-  :message: Expected 56250 Was 33750
 - :test: test_iterateCycleCounter_when_currentRate_is_80000_after_the_function_in_several_loop_cyclePerStepConter_will_remain_6000
   :line: 660
   :message: Expected 750000 Was 300000
 - :test: test_iterateCycleCounter_currentRate_is_100_after_the_function_in_several_loop_cyclePerStepConter_will_remain_9366
-  :line: 674
-  :message: Expected 56250 Was 33750
+  :line: 677
+  :message: Expected 750000 Was 300000
 - :test: test_acceleratreRate_when_currentRate_is_80000_after_the_function_in_several_loop_the_currentRate_will_be_increased_to_80500
   :line: 704
   :message: Expected 6000 Was 24000
@@ -151,8 +151,8 @@
 :ignores: []
 :counts:
   :total: 48
-  :passed: 41
-  :failed: 7
+  :passed: 42
+  :failed: 6
   :ignored: 0
 :stdout:
 - ''

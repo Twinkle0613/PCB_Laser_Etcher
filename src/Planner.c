@@ -14,25 +14,163 @@ void planLineBlock(float x, float y, float z, float feedRate, uint8_t InvertFeed
   float unitVector[3];
   convertXYZMovingDistanceToStepAndStoreToArray(x,y,z,target); // convert the movement distance to number of step for stepper motor
   calculateXYZDeltaInMilliMeterAndStoreToArray(target,delta); // Calculate Delta X, Y and X in mm and store to delta
-  block->steps[X_AXIS] = getXYZDeltaInSteps(target,X_AXIS); // Calculate Delta X, Y and X in steps and store to targe[X_AXIS]
-  block->steps[Y_AXIS] = getXYZDeltaInSteps(target,Y_AXIS); // Calculate Delta X, Y and X in steps and store to targe[Y_AXIS]
-  block->steps[Z_AXIS] = getXYZDeltaInSteps(target,Z_AXIS); // Calculate Delta X, Y and X in steps and store to targe[Z_AXIS]
-  block->directionBits = 0; //reset directionBits
-  block->directionBits |= determineDirection(target);  // block->directionBits is a status register that is used to indicate the motor moving direaction
+  calculateXYZaxisSteps(block,target);  // Calculate Delta X, Y and X in steps and store to targe[]
+  configDirectionBist(block,target);
   block->stepEventCount = getHighestStepsInXYZsteps(block); // To find which the steps of axis is highest
+  if(block->stepEventCount == 0){return;}
   block->millimeters = getVectorLength(delta);  // Calulate the magnitude of vector. 
   block->inverseMillimeters = getInverse(block->millimeters); // inverse the magnitude of vector.
   estimateNominalRateAndSpeed(block,feedRate,InvertFeedRateMode); // Calculate nominalRate and nominalSpeed
   calculateUnitVectorForXYZaxisAndStoreToArray(block,delta,unitVector); // Calculate XYZ unitVector
-  
+  float cosTheta = getCosThetaBetweenTwoVector(plExecutor.previousUnitVec,unitVector);
+  entrySpeedPlanning(block,cosTheta);
+  saveDataToPlExecutor(block->nominalSpeed,target,unitVector);
+  updatebufferHead();
+  replanBlockBufferStructure();
+}
 
-  plExecutor.previousNominalSpeed = block->nominalSpeed; // update planner executor nominal speed
-  memcpy(plExecutor.previousUnitVec,unitVector,sizeof(unitVector)); // update planner executor previous path unit vector
-  memcpy(plExecutor.position,target,sizeof(target)); // update planner executor position
+void replanBlockBufferStructure(void){
+  uint8_t blockIndex = bufferTail;
+  block_t *current;
+  block_t *next = NULL;
+  while(blockIndex != bufferHead){
+  current = next;
+  next = &blockBuffer[blockIndex];
+  if(current != NULL){
+   blockMovingExecutionPlaning(current,current->entrySpeed/current->nominalSpeed,next->entrySpeed/current->nominalSpeed);
+  }
+  blockIndex = nextBlockIndex(blockIndex); 
+  }
+  blockMovingExecutionPlaning(next,next->entrySpeed/next->nominalSpeed,MINIMUM_SPEED/next->nominalSpeed);
+}
+
+void entrySpeedPlanning(block_t* block, float cosTheta){
+    block->entrySpeed = MINIMUM_SPEED;
+    if(bufferHead != bufferTail){
+     if(cosTheta < 0.95){ 
+       block->entrySpeed = min(plExecutor.previousNominalSpeed,block->nominalSpeed);
+     }
+    
+    }
+}
+float getCosThetaBetweenTwoVector(float unitVector1[],float unitVector2[]){
+  return -(unitVector1[X_AXIS]*unitVector2[X_AXIS] + unitVector1[Y_AXIS]*unitVector2[Y_AXIS] + unitVector1[Z_AXIS]*unitVector2[Z_AXIS]);
+}
+
+
+
+void configDirectionBist(block_t* block, int32_t target[]){
+   block->directionBits = 0; //reset directionBits
+  block->directionBits |= determineDirection(target);  // block->directionBits is a status register that is used to indicate the motor moving direaction
+}
+
+
+void updatebufferHead(void){
   bufferHead = nextBufferHead;  // Update buffer head and next buffer head indices
   nextBufferHead = nextBlockIndex(bufferHead);
 }
+void saveDataToPlExecutor(float nominalSpeed,int32_t target[], float unitVector[]){
+  plExecutor.previousNominalSpeed = nominalSpeed; // update planner executor nominal speed
+  memcpy(plExecutor.previousUnitVec,unitVector,sizeof(float)*3); // update planner executor previous path unit vector
+  memcpy(plExecutor.position,target,sizeof(int32_t)*3); // update planner executor position
+}
 
+void blockMovingExecutionPlaning(block_t* block, float entryFactor, float exitFactor){
+  block->initialRate = _ceil(block->nominalRate*entryFactor);
+  block->finalRate = _ceil(block->nominalRate*exitFactor);
+  
+  int32_t accelStep = _ceil(getRampStep(block->initialRate,block->nominalRate,ACCELERATION*STEP_PER_MM));
+  int32_t deccelStep =_ceil(getRampStep(block->nominalRate,block->finalRate,-ACCELERATION*STEP_PER_MM));
+  int32_t nominalStep = getNominalStep(block->stepEventCount,accelStep,deccelStep);
+  ifNominatStepLessThanZeroRecaculateAccelStep(block,&nominalStep,&accelStep);
+  block->accelerateUntil = accelStep;
+  block->deccelerateAfter = accelStep+nominalStep;
+}
+
+void ifNominatStepLessThanZeroRecaculateAccelStep(block_t* block,int32_t*nominalStep, int32_t* accelStep){
+
+    if(*nominalStep < 0){
+    *accelStep = _ceil(getIntersectionDistance(block));
+    *nominalStep = 0;
+  }
+}
+
+
+/*                        + <- some maximum rate we don't care about
+                         /|\
+                        / | \                    
+                       /  |  + <- final_rate     
+                      /   |  |                   
+     initial_rate -> +----+--+                   
+                       X1 ^X2^                   
+                          |  |                   
+      intersection_distance  Distance  
+      
+      Distance = X1 + X2
+      
+      X1 = (MaxRate^2 - initialRate^2)/(2*accel)
+      X2 = (MaxRate^2 - finalRate^2)/(2*accel)
+      
+      Distance*(2*accel) = 2*MaxRate^2 - initialRate^2 - finalRate^2
+      MaxRate^2 = (2*accel*Distance + initialRate^2 + finalRate^2)/2
+      
+             2*accel*distance + InitialRate^2 + FinalRate*2    2*InitialRate^2
+             ---------------------------------------------  - ---------------
+                                2                                  2
+      X1 =       ---------------------------------------------------------------
+                                             2*accel
+                                             
+                    2*accel*distance - InitialRate^2 + finalRate^2
+      X1 =          ------------------------------------------------
+                                        4*accel                   
+         
+*/
+
+float getIntersectionDistance(block_t* block){
+  float initialRate = block->initialRate;
+  float finalRate = block->finalRate;
+  float distance = block->stepEventCount;
+  float acceleration = ACCELERATION*STEP_PER_MM;
+  float intersectionDistance = ((2*acceleration*distance - initialRate*initialRate + finalRate*finalRate)/(4*acceleration));
+  intersectionDistance = min(intersectionDistance,block->stepEventCount);
+  intersectionDistance = max(intersectionDistance,0);
+  return intersectionDistance;
+}
+
+int32_t getNominalStep(int32_t evenStep, int32_t accelStep, int32_t deccelStep){
+  return (evenStep - accelStep - deccelStep);
+}
+
+/*
+
+                        +---<-nominalRate
+                      / |
+                    /   |
+     initialRate->+     |
+                  |     |
+                  +-----+---
+                       time
+
+      nominalRate = accel*time + initialRate
+      time = (nominalRate - initialRate)/accel
+      
+     rampStep = initialRate*time + (nominalRate - initialRate)*time/2
+              = time(initialRate + (nominalRate - initialRate)/2)
+              = time((initialRate + nominalRate)/2)
+                
+                nominalRate - initialRate      initialRate + nominalRate
+     rampStep =  -------------------------  X   -------------------------
+                          accel                           2
+
+                nominalRate^2 + initialRate2
+     rampStep = ----------------------------
+                         2*accel     
+*/
+
+
+float getRampStep(float initialRate, float targetRate, float acceleration){
+  return( ((targetRate*targetRate)-(initialRate*initialRate))/((float)(2.0*acceleration) ));
+}
 
 void convertXYZMovingDistanceToStepAndStoreToArray(float x,float y,float z,int32_t target[]){
    target[X_AXIS] = _lround(x*STEP_PER_MM);
@@ -181,7 +319,16 @@ float estimateDeccelerationStep(void){
 float estimateAccelerationStep(float initialRate, float targetRate, float acceleration){
  return( ((targetRate*targetRate)-(initialRate*initialRate))/((float)(2.0*acceleration) ));
 }
-
-
+// Testing purpose
+float _getUnitVector(float posX, float posY, float posZ, int8_t axis){
+  if(axis == X_AXIS){
+    return posX/ sqrt(posX*posX+posY*posY+posZ*posZ);
+  }else if(axis == Y_AXIS){
+    return posY/ sqrt(posX*posX+posY*posY+posZ*posZ);
+  }else if(axis == Z_AXIS){
+    return posZ/ sqrt(posX*posX+posY*posY+posZ*posZ);
+  }
+  
+}
 
 

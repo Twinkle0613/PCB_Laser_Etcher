@@ -922,8 +922,6 @@ void test_getUnitVector_the_deltaX_is_300_deltaY_is_400_and_deltaZ_is_100_and_ve
 
 }
 
-
-
 void test_calculateUnitVectorForXYZaxisAndStoreToArray_the_deltaX_is_300_deltaY_is_400_and_deltaZ_is_100_and_vectorLength_is_509pt109(void){
 
   int32_t target[3];
@@ -954,12 +952,966 @@ void test_calculateUnitVectorForXYZaxisAndStoreToArray_the_deltaX_is_300_deltaY_
 
   calculateUnitVectorForXYZaxisAndStoreToArray(block,delta,unitVector);
 
-  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.0019611)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(686));
+  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.0019611)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(701));
 
-  UnityAssertFloatsWithin((_UF)((_UF)((0.58835)) * (_UF)(0.00001f)), (_UF)((_UF)((0.58835))), (_UF)((_UF)((unitVector[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(687)));
+  UnityAssertFloatsWithin((_UF)((_UF)((0.58835)) * (_UF)(0.00001f)), (_UF)((_UF)((0.58835))), (_UF)((_UF)((unitVector[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(702)));
 
-  UnityAssertFloatsWithin((_UF)((_UF)((0.78446)) * (_UF)(0.00001f)), (_UF)((_UF)((0.78446))), (_UF)((_UF)((unitVector[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(688)));
+  UnityAssertFloatsWithin((_UF)((_UF)((0.78446)) * (_UF)(0.00001f)), (_UF)((_UF)((0.78446))), (_UF)((_UF)((unitVector[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(703)));
 
-  UnityAssertFloatsWithin((_UF)((_UF)((0.196116)) * (_UF)(0.00001f)), (_UF)((_UF)((0.196116))), (_UF)((_UF)((unitVector[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(689)));
+  UnityAssertFloatsWithin((_UF)((_UF)((0.196116)) * (_UF)(0.00001f)), (_UF)((_UF)((0.196116))), (_UF)((_UF)((unitVector[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(704)));
+
+}
+
+
+
+void test_planLineBlock_put_Moving_X_axis_is_300_Y_axis_is_400_and_Z_axis_is_100_(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  planLineBlock(300,400,100,100,0);
+
+  UnityAssertEqualNumber((_U_SINT)((0x00)), (_U_SINT)((block->directionBits)), (((void *)0)), (_U_UINT)(710), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((509.902)) * (_UF)(0.00001f)), (_UF)((_UF)((509.902))), (_UF)((_UF)((block->millimeters))), ((((void *)0))), (_U_UINT)((_U_UINT)(711)));
+
+  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.0019611)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(712));
+
+  UnityAssertEqualNumber((_U_SINT)((60000)), (_U_SINT)((block->steps[0])), (((void *)0)), (_U_UINT)(713), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->steps[1])), (((void *)0)), (_U_UINT)(714), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->steps[2])), (((void *)0)), (_U_UINT)(715), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->stepEventCount)), (((void *)0)), (_U_UINT)(716), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(717), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block->nominalSpeed)), (((void *)0)), (_U_UINT)(718), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(719), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((bufferHead)), (((void *)0)), (_U_UINT)(720), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((2)), (_U_SINT)((nextBufferHead)), (((void *)0)), (_U_UINT)(721), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.58835)) * (_UF)(0.00001f)), (_UF)((_UF)((0.58835))), (_UF)((_UF)((plExecutor.previousUnitVec[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(722)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.78446)) * (_UF)(0.00001f)), (_UF)((_UF)((0.78446))), (_UF)((_UF)((plExecutor.previousUnitVec[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(723)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.196116)) * (_UF)(0.00001f)), (_UF)((_UF)((0.196116))), (_UF)((_UF)((plExecutor.previousUnitVec[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(724)));
+
+  UnityAssertEqualNumber((_U_SINT)((60000)), (_U_SINT)((plExecutor.position[0])), (((void *)0)), (_U_UINT)(725), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((plExecutor.position[1])), (((void *)0)), (_U_UINT)(726), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((plExecutor.position[2])), (((void *)0)), (_U_UINT)(727), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((plExecutor.previousNominalSpeed)), (((void *)0)), (_U_UINT)(728), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_getRampStep_initialRate_is_80000_and_targeRate_is_160000_and_acceleration_is_36000mm_per_min_square(void){
+
+
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  float accelStep = _ceil(getRampStep(80000,100000,10*60*60*200));
+
+  float deccelStep = _ceil(getRampStep(100000,80000,-10*60*60*200));
+
+  UnityAssertEqualNumber((_U_SINT)((250)), (_U_SINT)((accelStep)), (((void *)0)), (_U_UINT)(754), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((250)), (_U_SINT)((deccelStep)), (((void *)0)), (_U_UINT)(755), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+void test_getNominalStep_the_function_is_tested_by_putting_some_value(void){
+
+  UnityAssertEqualNumber((_U_SINT)((5000)), (_U_SINT)((getNominalStep(8000,1000,2000))), (((void *)0)), (_U_UINT)(759), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((2000)), (_U_SINT)((getNominalStep(8000,1000,5000))), (((void *)0)), (_U_UINT)(760), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((getNominalStep(8000,3000,5000))), (((void *)0)), (_U_UINT)(761), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((-3000)), (_U_SINT)((getNominalStep(8000,3000,8000))), (((void *)0)), (_U_UINT)(762), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_getIntersectionDistance_put_initialRate_and_finalRate_is_equal_80000_and_distance_is_change(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->initialRate = 80000;
+
+  block->finalRate = 80000;
+
+  block->stepEventCount = 300;
+
+
+
+  UnityAssertFloatsWithin((_UF)((_UF)((150)) * (_UF)(0.00001f)), (_UF)((_UF)((150))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(784)));
+
+  block->stepEventCount = 500;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((250)) * (_UF)(0.00001f)), (_UF)((_UF)((250))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(786)));
+
+  block->stepEventCount = 200;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((100)) * (_UF)(0.00001f)), (_UF)((_UF)((100))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(788)));
+
+  block->stepEventCount = 50;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((25)) * (_UF)(0.00001f)), (_UF)((_UF)((25))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(790)));
+
+  block->stepEventCount = 15;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((8)) * (_UF)(0.00001f)), (_UF)((_UF)((8))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(792)));
+
+
+
+
+
+}
+
+void xtest_getIntersectionDistance_when_finalRate_is_much_higher_than_initialRate_(void){
+
+    block_t *block = &blockBuffer[bufferHead];
+
+  block->initialRate = 80000;
+
+  block->stepEventCount = 500;
+
+  block->finalRate = 90000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((310)) * (_UF)(0.00001f)), (_UF)((_UF)((310))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(818)));
+
+  block->finalRate = 100000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((375)) * (_UF)(0.00001f)), (_UF)((_UF)((375))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(820)));
+
+  block->finalRate = 130000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((500)) * (_UF)(0.00001f)), (_UF)((_UF)((500))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(822)));
+
+  block->finalRate = 150000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((500)) * (_UF)(0.00001f)), (_UF)((_UF)((500))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(824)));
+
+}
+
+void test_getIntersectionDistance_when_finalRate_is_much_less_than_initialRate_(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->finalRate = 80000;
+
+  block->stepEventCount = 500;
+
+  block->initialRate = 90000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((191)) * (_UF)(0.00001f)), (_UF)((_UF)((191))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(849)));
+
+  block->initialRate = 100000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((125)) * (_UF)(0.00001f)), (_UF)((_UF)((125))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(851)));
+
+  block->initialRate = 130000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(853)));
+
+  block->initialRate = 150000;
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((_ceil(getIntersectionDistance(block))))), ((((void *)0))), (_U_UINT)((_U_UINT)(855)));
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_and_exitFactor_is_0pts8(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.8,0.8);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(878), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(879), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((250)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(880), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((750)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(881), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts8(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.5,0.8);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(905), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(906), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((521)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(907), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((750)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(908), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts8_and_exitFactor_is_0pts5(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.8,0.5);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(932), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(933), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((250)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(934), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((479)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(935), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts5(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.5,0.5);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(960), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(961), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((500)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(962), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((500)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(963), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts2(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.5,0.2);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(987), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(988), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((428)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(989), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((428)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(990), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts5_and_exitFactor_is_0pts01(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.5,0.01);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1014), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1015), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((414)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1016), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((414)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1017), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_150000_entryFactor_is_1pts3_and_exitFactor_is_0pts01(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 150000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.867,0.0067);
+
+  UnityAssertEqualNumber((_U_SINT)((130050)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1041), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1005)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1042), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1043), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1044), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts2_and_exitFactor_is_0pts5(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.2,0.5);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1068), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1069), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((573)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1070), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((573)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1071), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_100000_entryFactor_is_0pts01_and_exitFactor_is_0pts5(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 100000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.01,0.5);
+
+  UnityAssertEqualNumber((_U_SINT)((1000)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1096), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((50000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1097), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((587)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1098), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((587)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1099), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_blockMovingExecutionPlaning_nominalRate_is_150000_entryFactor_is_0pts01_and_exitFactor_is_0pts9(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalRate = 150000;
+
+  block->stepEventCount = 1000;
+
+  blockMovingExecutionPlaning(block,0.01,0.9);
+
+  UnityAssertEqualNumber((_U_SINT)((1500)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1122), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((135000)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1123), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1000)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1124), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1000)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1125), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+
+
+
+
+void test__getUnitVector_the_posX_is_3_posY_is_4_and_posZ_is_5(void){
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.42426)) * (_UF)(0.00001f)), (_UF)((_UF)((0.42426))), (_UF)((_UF)((_getUnitVector(3,4,5,0)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1130)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.56569)) * (_UF)(0.00001f)), (_UF)((_UF)((0.56569))), (_UF)((_UF)((_getUnitVector(3,4,5,1)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1131)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.70711)) * (_UF)(0.00001f)), (_UF)((_UF)((0.70711))), (_UF)((_UF)((_getUnitVector(3,4,5,2)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1132)));
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y0Z0_and_vectorB_is_X5Y0Z0(void){
+
+  float unitVectorA[3];
+
+  float unitVectorB[3];
+
+  unitVectorA[0] = _getUnitVector(8,0,0,0);
+
+  unitVectorA[1] = _getUnitVector(8,0,0,1);
+
+  unitVectorA[2] = _getUnitVector(8,0,0,2);
+
+  unitVectorB[0] = _getUnitVector(5,0,0,0);
+
+  unitVectorB[1] = _getUnitVector(5,0,0,1);
+
+  unitVectorB[2] = _getUnitVector(5,0,0,2);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((unitVectorA[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1149)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorA[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1150)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorA[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1151)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((unitVectorB[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1152)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorB[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1153)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorB[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1154)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((-1)) * (_UF)(0.00001f)), (_UF)((_UF)((-1))), (_UF)((_UF)((getCosThetaBetweenTwoVector(unitVectorA,unitVectorB)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1155)));
+
+}
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y0Z0_and_vectorB_is_X4Y3Z0(void){
+
+  float unitVectorA[3];
+
+  float unitVectorB[3];
+
+  unitVectorA[0] = _getUnitVector(8,0,0,0);
+
+  unitVectorA[1] = _getUnitVector(8,0,0,1);
+
+  unitVectorA[2] = _getUnitVector(8,0,0,2);
+
+  unitVectorB[0] = _getUnitVector(4,3,0,0);
+
+  unitVectorB[1] = _getUnitVector(4,3,0,1);
+
+  unitVectorB[2] = _getUnitVector(4,3,0,2);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((unitVectorA[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1180)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorA[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1181)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorA[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1182)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.8)) * (_UF)(0.00001f)), (_UF)((_UF)((0.8))), (_UF)((_UF)((unitVectorB[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1183)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.6)) * (_UF)(0.00001f)), (_UF)((_UF)((0.6))), (_UF)((_UF)((unitVectorB[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1184)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorB[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1185)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((-0.8)) * (_UF)(0.00001f)), (_UF)((_UF)((-0.8))), (_UF)((_UF)((getCosThetaBetweenTwoVector(unitVectorA,unitVectorB)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1186)));
+
+}
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y0Z0_and_vectorB_is_Xnegate2Y0Z0(void){
+
+  float unitVectorA[3];
+
+  float unitVectorB[3];
+
+  unitVectorA[0] = _getUnitVector(8,0,0,0);
+
+  unitVectorA[1] = _getUnitVector(8,0,0,1);
+
+  unitVectorA[2] = _getUnitVector(8,0,0,2);
+
+  unitVectorB[0] = _getUnitVector(-2,0,0,0);
+
+  unitVectorB[1] = _getUnitVector(-2,0,0,1);
+
+  unitVectorB[2] = _getUnitVector(-2,0,0,2);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((unitVectorA[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1209)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorA[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1210)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorA[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1211)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((-1)) * (_UF)(0.00001f)), (_UF)((_UF)((-1))), (_UF)((_UF)((unitVectorB[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1212)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorB[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1213)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((unitVectorB[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1214)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((getCosThetaBetweenTwoVector(unitVectorA,unitVectorB)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1215)));
+
+}
+
+
+
+void test_getCosThetaBetweenTwoVector_when_vectorA_is_X8Y10Z2_and_vectorB_is_X3Y4Z5(void){
+
+  float unitVectorA[3];
+
+  float unitVectorB[3];
+
+  unitVectorA[0] = _getUnitVector(8,10,2,0);
+
+  unitVectorA[1] = _getUnitVector(8,10,2,1);
+
+  unitVectorA[2] = _getUnitVector(8,10,2,2);
+
+  unitVectorB[0] = _getUnitVector(3,4,5,0);
+
+  unitVectorB[1] = _getUnitVector(3,4,5,1);
+
+  unitVectorB[2] = _getUnitVector(3,4,5,2);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.61721)) * (_UF)(0.00001f)), (_UF)((_UF)((0.61721))), (_UF)((_UF)((unitVectorA[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1227)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.77152)) * (_UF)(0.00001f)), (_UF)((_UF)((0.77152))), (_UF)((_UF)((unitVectorA[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1228)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.154303)) * (_UF)(0.00001f)), (_UF)((_UF)((0.154303))), (_UF)((_UF)((unitVectorA[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1229)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.42426)) * (_UF)(0.00001f)), (_UF)((_UF)((0.42426))), (_UF)((_UF)((unitVectorB[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1230)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.56569)) * (_UF)(0.00001f)), (_UF)((_UF)((0.56569))), (_UF)((_UF)((unitVectorB[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1231)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.70711)) * (_UF)(0.00001f)), (_UF)((_UF)((0.70711))), (_UF)((_UF)((unitVectorB[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1232)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((-0.80740)) * (_UF)(0.00001f)), (_UF)((_UF)((-0.80740))), (_UF)((_UF)((getCosThetaBetweenTwoVector(unitVectorA,unitVectorB)))), ((((void *)0))), (_U_UINT)((_U_UINT)(1233)));
+
+}
+
+
+
+void test_entrySpeedPlanning_the_enntry_speed_first_block_is_0(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  UnityAssertEqualNumber((_U_SINT)((bufferHead)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(1238), UNITY_DISPLAY_STYLE_INT);
+
+  entrySpeedPlanning(block,0);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((block->entrySpeed))), ((((void *)0))), (_U_UINT)((_U_UINT)(1240)));
+
+}
+
+void test_entrySpeedPlanning_when_add_in_a_block_which_the_vector_is_same_with_previous_block_and_previousNominalSpeed_is_higher_than_the_current_nominalSpeed(void){
+
+  updatebufferHead();
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalSpeed = 100;
+
+  plExecutor.previousNominalSpeed = 150;
+
+  entrySpeedPlanning(block,-1);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((100)) * (_UF)(0.00001f)), (_UF)((_UF)((100))), (_UF)((_UF)((block->entrySpeed))), ((((void *)0))), (_U_UINT)((_U_UINT)(1262)));
+
+}
+
+void test_entrySpeedPlanning_when_add_in_a_block_which_the_vector_is_same_with_previous_block_and_previousNominalSpeed_is_less_than_the_current_nominalSpeed(void){
+
+  updatebufferHead();
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  block->nominalSpeed = 100;
+
+  plExecutor.previousNominalSpeed = 80;
+
+  entrySpeedPlanning(block,-1);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((80)) * (_UF)(0.00001f)), (_UF)((_UF)((80))), (_UF)((_UF)((block->entrySpeed))), ((((void *)0))), (_U_UINT)((_U_UINT)(1284)));
+
+}
+
+
+
+void test_planLineBlock_and_entrySpeedPlanning_put_Moving_X_axis_is_300_Y_axis_is_400_and_Z_axis_is_100_(void){
+
+
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  planLineBlock(300,400,100,100,0);
+
+  UnityAssertEqualNumber((_U_SINT)((0x00)), (_U_SINT)((block->directionBits)), (((void *)0)), (_U_UINT)(1291), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((509.902)) * (_UF)(0.00001f)), (_UF)((_UF)((509.902))), (_UF)((_UF)((block->millimeters))), ((((void *)0))), (_U_UINT)((_U_UINT)(1292)));
+
+  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.0019611)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(1293));
+
+  UnityAssertEqualNumber((_U_SINT)((60000)), (_U_SINT)((block->steps[0])), (((void *)0)), (_U_UINT)(1294), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->steps[1])), (((void *)0)), (_U_UINT)(1295), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->steps[2])), (((void *)0)), (_U_UINT)(1296), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->stepEventCount)), (((void *)0)), (_U_UINT)(1297), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1298), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block->nominalSpeed)), (((void *)0)), (_U_UINT)(1299), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->entrySpeed)), (((void *)0)), (_U_UINT)(1300), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(1301), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((bufferHead)), (((void *)0)), (_U_UINT)(1302), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((2)), (_U_SINT)((nextBufferHead)), (((void *)0)), (_U_UINT)(1303), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.58835)) * (_UF)(0.00001f)), (_UF)((_UF)((0.58835))), (_UF)((_UF)((plExecutor.previousUnitVec[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1304)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.78446)) * (_UF)(0.00001f)), (_UF)((_UF)((0.78446))), (_UF)((_UF)((plExecutor.previousUnitVec[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1305)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.196116)) * (_UF)(0.00001f)), (_UF)((_UF)((0.196116))), (_UF)((_UF)((plExecutor.previousUnitVec[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1306)));
+
+  UnityAssertEqualNumber((_U_SINT)((60000)), (_U_SINT)((plExecutor.position[0])), (((void *)0)), (_U_UINT)(1307), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((plExecutor.position[1])), (((void *)0)), (_U_UINT)(1308), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((plExecutor.position[2])), (((void *)0)), (_U_UINT)(1309), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((plExecutor.previousNominalSpeed)), (((void *)0)), (_U_UINT)(1310), UNITY_DISPLAY_STYLE_INT);
+
+
+
+
+
+  block = &blockBuffer[bufferHead];
+
+  planLineBlock(400,400,100,100,0);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((100)) * (_UF)(0.00001f)), (_UF)((_UF)((100))), (_UF)((_UF)((block->millimeters))), ((((void *)0))), (_U_UINT)((_U_UINT)(1315)));
+
+  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.01)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(1316));
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->steps[0])), (((void *)0)), (_U_UINT)(1317), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->steps[1])), (((void *)0)), (_U_UINT)(1318), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->steps[2])), (((void *)0)), (_U_UINT)(1319), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->stepEventCount)), (((void *)0)), (_U_UINT)(1320), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1321), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block->nominalSpeed)), (((void *)0)), (_U_UINT)(1322), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block->entrySpeed)), (((void *)0)), (_U_UINT)(1323), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(1324), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((2)), (_U_SINT)((bufferHead)), (((void *)0)), (_U_UINT)(1325), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((3)), (_U_SINT)((nextBufferHead)), (((void *)0)), (_U_UINT)(1326), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((plExecutor.previousUnitVec[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1327)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((plExecutor.previousUnitVec[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1328)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((plExecutor.previousUnitVec[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1329)));
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((plExecutor.position[0])), (((void *)0)), (_U_UINT)(1330), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((plExecutor.position[1])), (((void *)0)), (_U_UINT)(1331), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((plExecutor.position[2])), (((void *)0)), (_U_UINT)(1332), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((plExecutor.previousNominalSpeed)), (((void *)0)), (_U_UINT)(1333), UNITY_DISPLAY_STYLE_INT);
+
+
+
+  block = &blockBuffer[bufferHead];
+
+  planLineBlock(500,400,100,90,0);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((100)) * (_UF)(0.00001f)), (_UF)((_UF)((100))), (_UF)((_UF)((block->millimeters))), ((((void *)0))), (_U_UINT)((_U_UINT)(1337)));
+
+  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.01)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(1338));
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->steps[0])), (((void *)0)), (_U_UINT)(1339), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->steps[1])), (((void *)0)), (_U_UINT)(1340), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->steps[2])), (((void *)0)), (_U_UINT)(1341), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->stepEventCount)), (((void *)0)), (_U_UINT)(1342), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18000)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1343), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((90)), (_U_SINT)((block->nominalSpeed)), (((void *)0)), (_U_UINT)(1344), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((90)), (_U_SINT)((block->entrySpeed)), (((void *)0)), (_U_UINT)(1345), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(1346), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((3)), (_U_SINT)((bufferHead)), (((void *)0)), (_U_UINT)(1347), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((4)), (_U_SINT)((nextBufferHead)), (((void *)0)), (_U_UINT)(1348), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((1)) * (_UF)(0.00001f)), (_UF)((_UF)((1))), (_UF)((_UF)((plExecutor.previousUnitVec[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1349)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((plExecutor.previousUnitVec[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1350)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0)) * (_UF)(0.00001f)), (_UF)((_UF)((0))), (_UF)((_UF)((plExecutor.previousUnitVec[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1351)));
+
+  UnityAssertEqualNumber((_U_SINT)((100000)), (_U_SINT)((plExecutor.position[0])), (((void *)0)), (_U_UINT)(1352), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((plExecutor.position[1])), (((void *)0)), (_U_UINT)(1353), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((plExecutor.position[2])), (((void *)0)), (_U_UINT)(1354), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((90)), (_U_SINT)((plExecutor.previousNominalSpeed)), (((void *)0)), (_U_UINT)(1355), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_planLineBlock_replanBlockBufferStructure_only_one_block_is_added_into_BlockBuffer_to_do_blockMovingExecutionPlaning(void){
+
+  block_t *block = &blockBuffer[bufferHead];
+
+  planLineBlock(300,400,100,100,0);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((0x00)), (_U_SINT)((block->directionBits)), (((void *)0)), (_U_UINT)(1377), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((509.902)) * (_UF)(0.00001f)), (_UF)((_UF)((509.902))), (_UF)((_UF)((block->millimeters))), ((((void *)0))), (_U_UINT)((_U_UINT)(1378)));
+
+  UnityAssertFloatsWithin((_UF)((0.00002)), (_UF)((0.0019611)), (_UF)((block->inverseMillimeters)), (((void *)0)), (_U_UINT)(1379));
+
+  UnityAssertEqualNumber((_U_SINT)((60000)), (_U_SINT)((block->steps[0])), (((void *)0)), (_U_UINT)(1380), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->steps[1])), (((void *)0)), (_U_UINT)(1381), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block->steps[2])), (((void *)0)), (_U_UINT)(1382), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block->stepEventCount)), (((void *)0)), (_U_UINT)(1383), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1384), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block->nominalSpeed)), (((void *)0)), (_U_UINT)(1385), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->entrySpeed)), (((void *)0)), (_U_UINT)(1386), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((bufferTail)), (((void *)0)), (_U_UINT)(1387), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((1)), (_U_SINT)((bufferHead)), (((void *)0)), (_U_UINT)(1388), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((2)), (_U_SINT)((nextBufferHead)), (((void *)0)), (_U_UINT)(1389), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.58835)) * (_UF)(0.00001f)), (_UF)((_UF)((0.58835))), (_UF)((_UF)((plExecutor.previousUnitVec[0]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1390)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.78446)) * (_UF)(0.00001f)), (_UF)((_UF)((0.78446))), (_UF)((_UF)((plExecutor.previousUnitVec[1]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1391)));
+
+  UnityAssertFloatsWithin((_UF)((_UF)((0.196116)) * (_UF)(0.00001f)), (_UF)((_UF)((0.196116))), (_UF)((_UF)((plExecutor.previousUnitVec[2]))), ((((void *)0))), (_U_UINT)((_U_UINT)(1392)));
+
+  UnityAssertEqualNumber((_U_SINT)((60000)), (_U_SINT)((plExecutor.position[0])), (((void *)0)), (_U_UINT)(1393), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((plExecutor.position[1])), (((void *)0)), (_U_UINT)(1394), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((plExecutor.position[2])), (((void *)0)), (_U_UINT)(1395), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((plExecutor.previousNominalSpeed)), (((void *)0)), (_U_UINT)(1396), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1397), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1398), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1399), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((79982)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1400), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_planLineBlock_replanBlockBufferStructure_two_block_are_added_with_same_nominal_speed_into_BlockBuffer_to_do_blockMovingExecutionPlaning(void){
+
+  block_t *block = &blockBuffer[bufferTail];
+
+  planLineBlock(300,400,100,100,0);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1432), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1433), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1434), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1435), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((79982)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1436), UNITY_DISPLAY_STYLE_INT);
+
+
+
+  planLineBlock(400,400,100,100,0);
+
+
+
+  block_t *block1 = &blockBuffer[bufferTail];
+
+  block_t *block2 = &blockBuffer[bufferTail+1];
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block1->initialRate)), (((void *)0)), (_U_UINT)(1442), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block1->stepEventCount)), (((void *)0)), (_U_UINT)(1443), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block1->entrySpeed)), (((void *)0)), (_U_UINT)(1444), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block1->nominalRate)), (((void *)0)), (_U_UINT)(1445), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block1->finalRate)), (((void *)0)), (_U_UINT)(1446), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block1->accelerateUntil)), (((void *)0)), (_U_UINT)(1447), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block1->deccelerateAfter)), (((void *)0)), (_U_UINT)(1448), UNITY_DISPLAY_STYLE_INT);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block2->stepEventCount)), (((void *)0)), (_U_UINT)(1450), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block2->entrySpeed)), (((void *)0)), (_U_UINT)(1451), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block2->initialRate)), (((void *)0)), (_U_UINT)(1452), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block2->nominalRate)), (((void *)0)), (_U_UINT)(1453), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block2->finalRate)), (((void *)0)), (_U_UINT)(1454), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block2->accelerateUntil)), (((void *)0)), (_U_UINT)(1455), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((19972)), (_U_SINT)((block2->deccelerateAfter)), (((void *)0)), (_U_UINT)(1456), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_planLineBlock_replanBlockBufferStructure_two_block_is_added_with_different_nominal_speed_NominalSpeed_of_Firblock_is_higher_than_SecBlock(void){
+
+  block_t *block = &blockBuffer[bufferTail];
+
+  planLineBlock(300,400,100,100,0);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1488), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1489), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1490), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1491), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((79982)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1492), UNITY_DISPLAY_STYLE_INT);
+
+
+
+  planLineBlock(400,400,100,90,0);
+
+
+
+  block_t *block1 = &blockBuffer[bufferTail];
+
+  block_t *block2 = &blockBuffer[bufferTail+1];
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block1->initialRate)), (((void *)0)), (_U_UINT)(1498), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block1->stepEventCount)), (((void *)0)), (_U_UINT)(1499), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block1->entrySpeed)), (((void *)0)), (_U_UINT)(1500), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block1->nominalRate)), (((void *)0)), (_U_UINT)(1501), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((14121)), (_U_SINT)((block1->finalRate)), (((void *)0)), (_U_UINT)(1502), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block1->accelerateUntil)), (((void *)0)), (_U_UINT)(1503), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((79996)), (_U_SINT)((block1->deccelerateAfter)), (((void *)0)), (_U_UINT)(1504), UNITY_DISPLAY_STYLE_INT);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block2->stepEventCount)), (((void *)0)), (_U_UINT)(1506), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((90)), (_U_SINT)((block2->entrySpeed)), (((void *)0)), (_U_UINT)(1507), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18000)), (_U_SINT)((block2->initialRate)), (((void *)0)), (_U_UINT)(1508), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18000)), (_U_SINT)((block2->nominalRate)), (((void *)0)), (_U_UINT)(1509), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block2->finalRate)), (((void *)0)), (_U_UINT)(1510), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block2->accelerateUntil)), (((void *)0)), (_U_UINT)(1511), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((19977)), (_U_SINT)((block2->deccelerateAfter)), (((void *)0)), (_U_UINT)(1512), UNITY_DISPLAY_STYLE_INT);
+
+}
+
+void test_planLineBlock_replanBlockBufferStructure_two_block_is_added_with_different_nominal_speed_NominalSpeed_of_Firblock_is_less_than_SecBlock(void){
+
+  block_t *block = &blockBuffer[bufferTail];
+
+  planLineBlock(300,400,100,100,0);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block->nominalRate)), (((void *)0)), (_U_UINT)(1546), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->initialRate)), (((void *)0)), (_U_UINT)(1547), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block->finalRate)), (((void *)0)), (_U_UINT)(1548), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block->accelerateUntil)), (((void *)0)), (_U_UINT)(1549), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((79982)), (_U_SINT)((block->deccelerateAfter)), (((void *)0)), (_U_UINT)(1550), UNITY_DISPLAY_STYLE_INT);
+
+  planLineBlock(400,400,100,120,0);
+
+
+
+  block_t *block1 = &blockBuffer[bufferTail];
+
+  block_t *block2 = &blockBuffer[bufferTail+1];
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block1->initialRate)), (((void *)0)), (_U_UINT)(1555), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block1->stepEventCount)), (((void *)0)), (_U_UINT)(1556), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block1->entrySpeed)), (((void *)0)), (_U_UINT)(1557), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block1->nominalRate)), (((void *)0)), (_U_UINT)(1558), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((15690)), (_U_SINT)((block1->finalRate)), (((void *)0)), (_U_UINT)(1559), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((18)), (_U_SINT)((block1->accelerateUntil)), (((void *)0)), (_U_UINT)(1560), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((80000)), (_U_SINT)((block1->deccelerateAfter)), (((void *)0)), (_U_UINT)(1561), UNITY_DISPLAY_STYLE_INT);
+
+
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block2->stepEventCount)), (((void *)0)), (_U_UINT)(1563), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((100)), (_U_SINT)((block2->entrySpeed)), (((void *)0)), (_U_UINT)(1564), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((20000)), (_U_SINT)((block2->initialRate)), (((void *)0)), (_U_UINT)(1565), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((24000)), (_U_SINT)((block2->nominalRate)), (((void *)0)), (_U_UINT)(1566), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((0)), (_U_SINT)((block2->finalRate)), (((void *)0)), (_U_UINT)(1567), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((13)), (_U_SINT)((block2->accelerateUntil)), (((void *)0)), (_U_UINT)(1568), UNITY_DISPLAY_STYLE_INT);
+
+  UnityAssertEqualNumber((_U_SINT)((19960)), (_U_SINT)((block2->deccelerateAfter)), (((void *)0)), (_U_UINT)(1569), UNITY_DISPLAY_STYLE_INT);
 
 }
