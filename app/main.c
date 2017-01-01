@@ -1,4 +1,4 @@
-
+#include <math.h>
 #include <stdint.h>
 #include "stm32f10x.h"
 #include "stm32f10x_rcc.h"
@@ -15,10 +15,10 @@
 #include "Planner.h"
 #include "Stepper.h"
 #include "System.h"
-#include "SystemMap.h"
 #include "Usart.h"
 #include "Protocol.h"
 #include "String.h"
+#include "Setting.h"
 //uint8_t motorDriveBuffer[NUMBER_OF_MOTOR];
 //uint8_t motorInfoBuffer[NUMBER_OF_MOTOR*2];
 void usartInit(void);
@@ -48,7 +48,8 @@ int main(void)
    motorDriveBufferInit();
    timInit();
    usartInit();
-   availableInsertBlock = 1;
+   availableInsertBlock = 2;
+
    while(1)
    {
     dataProcess();

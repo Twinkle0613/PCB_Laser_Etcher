@@ -9,6 +9,7 @@
 #include "System.h"
 #include "Motor.h"
 #include "Setting.h"
+#include "Usart.h"
 #define true 1
 #define false 0
 

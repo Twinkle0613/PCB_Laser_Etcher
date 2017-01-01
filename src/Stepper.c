@@ -5,6 +5,7 @@ stepper_t stExecutor;
 block_t *currentBlock; 
 uint8_t wakeUpState;
 uint8_t outputBits; 
+uint32_t stepsAcc = 0;
 volatile uint8_t availableInsertBlock;
 
 #define isLessThanAccelerateSteps (stExecutor.stepEventsCompleted < currentBlock->accelerateUntil)
@@ -15,10 +16,14 @@ volatile uint8_t availableInsertBlock;
 void TIM2_IRQHandler(void){
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
   triggerOutputData();
+  stepsAcc++;
   stExecutorInitProcess();
   if(currentBlock != NULL){
    executeStepDisplacementProcess();
    motorRateControlProcess();
+  }
+  if( (stepsAcc-1) == 16222){
+	  stepsAcc = stepsAcc;
   }
   sendResetStep();
 }
@@ -30,7 +35,11 @@ void motorRateControlProcess(void){
   }else{
     currentBlock = NULL;
     discardCurrentBlock();
-    availableInsertBlock = 1;
+    availableInsertBlock++;
+    if(availableInsertBlock == 1){
+       printString("OK");
+    }
+
   }
 }
 
@@ -46,7 +55,8 @@ void accelerateAndDeccelerateEvent(void){
 
 void accelerateRate(void){
   if(iterateCycleCounter()){
-    stExecutor.currentRate += INCREMENT_RESOLUTION;
+    //stExecutor.currentRate += INCREMENT_RESOLUTION;
+    stExecutor.currentRate += currentBlock->rateDelta;
     if(stExecutor.currentRate >= currentBlock->nominalRate){
       stExecutor.currentRate = currentBlock->nominalRate;
     }
@@ -64,13 +74,6 @@ int iterateCycleCounter(void){
   }
 }
 
-void setStepEventPerMin(uint32_t stepsPerMin){
-  if(stepsPerMin < MINIMUM_STEPS_PER_MINUTE){
-    stepsPerMin = MINIMUM_STEPS_PER_MINUTE;
-  }
-  stExecutor.cyclePerStepEvent = setCyclePerStepEventToTimer((TIMER_FREQUENCY/stepsPerMin)*60);
-}
-
 uint32_t setCyclePerStepEventToTimer(uint32_t cycle){
    uint16_t prescale = 1;
    uint32_t actualCycle;
@@ -84,7 +87,7 @@ uint32_t setCyclePerStepEventToTimer(uint32_t cycle){
   }
   TIM2->PSC = prescale - 1;                      // set prescaler
   TIM2->ARR = cycle;
-  return actualCycle;
+  return actualCycle*prescale;
 }
 
 void deccelerateRate(void){
@@ -93,6 +96,13 @@ void deccelerateRate(void){
   }else{
     deccelerationAbjustment();
   }  
+}
+
+void setStepEventPerMin(uint32_t stepsPerMin){
+  if(stepsPerMin < MINIMUM_STEPS_PER_MINUTE){
+    stepsPerMin = MINIMUM_STEPS_PER_MINUTE;
+  }
+  stExecutor.cyclePerStepEvent = setCyclePerStepEventToTimer((TIMER_FREQUENCY/stepsPerMin)*60);
 }
 
 void initializeDecceleration(void){
@@ -106,7 +116,8 @@ void initializeDecceleration(void){
 void deccelerationAbjustment(void){
  if(iterateCycleCounter()){
   if(stExecutor.currentRate > stExecutor.minSafeRate){
-    stExecutor.currentRate -= INCREMENT_RESOLUTION;    
+   // stExecutor.currentRate -= INCREMENT_RESOLUTION;
+    stExecutor.currentRate -= currentBlock->rateDelta;
   }else{
     stExecutor.currentRate >>= 1;
   }  
@@ -143,7 +154,8 @@ void transferInfoToStExecutor(block_t* block){
   stExecutor.currentRate = block->initialRate;
   setStepEventPerMin(stExecutor.currentRate);
   stExecutor.cyclePerStepCounter = 0;
-  stExecutor.minSafeRate = INCREMENT_RESOLUTION + (INCREMENT_RESOLUTION>>1);
+ // stExecutor.minSafeRate = INCREMENT_RESOLUTION + (INCREMENT_RESOLUTION>>1);
+  stExecutor.minSafeRate = block->rateDelta + (block->rateDelta>>1);
   stExecutor.steps[X_AXIS] = block->steps[X_AXIS];
   stExecutor.steps[Y_AXIS] = block->steps[Y_AXIS];
   stExecutor.steps[Z_AXIS] = block->steps[Z_AXIS];

@@ -7,26 +7,32 @@ uint8_t charCounter;
 void dataProcess(void){
   uint8_t character;
   while((character = readRxBuffer() ) != RX_BUFFER_IS_EMPTY ){
+    
     if(character == '\n'){
-      line[charCounter] = 0;
-      //printString(line);
-    if(availableInsertBlock && line[0] == '#'){
-      //printString("OK");
-      lineInterpretToBlock(line);
-      availableInsertBlock = 0;
-    }else{
-      //printString("Not Allow To Insert!");
-    }
-    charCounter = 0;
+     lineCheckingProcess();
     }else{
      line[charCounter++] = character;
     }
     
   }
+  
+}
+
+void lineCheckingProcess(void){
+   line[charCounter] = 0;
+      printString(line);
+   if((availableInsertBlock != 0) && line[0] == '#'){
+     interpretLineToBlock(line);
+     availableInsertBlock--;
+     if(availableInsertBlock){
+       printString("OK");
+     }
+    }
+    charCounter = 0;
 }
 
 
-void lineInterpretToBlock(char* line){
+void interpretLineToBlock(char* line){
   block_t *block = &blockBuffer[bufferHead];
   uint8_t charCounter = 0;
   char letter;

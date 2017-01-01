@@ -186,22 +186,22 @@ void test_getLetterAndValue_the_line_contain_B224X(void){
    TEST_ASSERT_EQUAL(5,charCounter);   
 }
 
-void test_lineInterpretToBlock_input_is_B224X10000Y3000Z40000S10000I8000F80000R500A3000D3000N160000_(void){
-  lineInterpretToBlock("B224");
+void test_interpretLineToBlock_input_is_B224X10000Y3000Z40000S10000I8000F80000R500A3000D3000N160000_(void){
+  interpretLineToBlock("B224");
   block_t *block = &blockBuffer[bufferTail];
   TEST_ASSERT_EQUAL(224,block->directionBits);
 }
 
-void test_lineInterpretToBlock_input_is_B224X10000_(void){
-  lineInterpretToBlock("B224X10000");
+void test_interpretLineToBlock_input_is_B224X10000_(void){
+  interpretLineToBlock("B224X10000");
   block_t *block = &blockBuffer[bufferTail];
   TEST_ASSERT_EQUAL(224,block->directionBits); 
   TEST_ASSERT_EQUAL(10000,block->steps[X_AXIS]); 
 }
 
-void test_lineInterpretToBlock_input_is_B224X10000Y3000Z4000S10000I8000F8000R500A3000D6000N160000_(void){
+void test_interpretLineToBlock_input_is_B224X10000Y3000Z4000S10000I8000F8000R500A3000D6000N160000_(void){
   TEST_ASSERT_EQUAL(bufferTail,bufferHead);
-  lineInterpretToBlock("B224X10000Y3000Z4000S10000I8000F8000R500A3000D6000N160000");
+  interpretLineToBlock("B224X10000Y3000Z4000S10000I8000F8000R500A3000D6000N160000");
   block_t *block = &blockBuffer[bufferTail];
   TEST_ASSERT_EQUAL(224,block->directionBits); 
   TEST_ASSERT_EQUAL(10000,block->steps[X_AXIS]); 
@@ -275,3 +275,4 @@ void test_dataProcess_send_NumberSignB224X10000Y3000Z4000S10000I8000F8000R500A30
   TEST_ASSERT_EQUAL(2,nextBufferHead);
   TEST_ASSERT_EQUAL(0,availableInsertBlock);
 }
+

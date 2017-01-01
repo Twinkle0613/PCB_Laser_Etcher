@@ -12,6 +12,9 @@ void USART1_IRQHandler(void){
     if(data == '$'){
      memset(rxBuffer,0,sizeof(rxBuffer));
      printString("RESET Success!");
+     
+    }else if(data == '!'){
+     printString("OK");
     }else{
      insertDataIntoRxBuffer(data);
     }
@@ -46,6 +49,7 @@ void usartConfig(USART_TypeDef* USARTx, uint32_t baudRate){
   NVIC_SetPriority(USARTx_IRQn,0);
   NVIC_EnableIRQ(USARTx_IRQn);
 }
+
 
 void insertDataIntoRxBuffer(uint8_t data){
   uint16_t nextHead = rxBufferHead;

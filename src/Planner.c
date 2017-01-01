@@ -13,7 +13,7 @@ void planLineBlock(float x, float y, float z, float feedRate, uint8_t InvertFeed
   float delta[3];
   float unitVector[3];
   convertXYZMovingDistanceToStepAndStoreToArray(x,y,z,target); // convert the movement distance to number of step for stepper motor
-  calculateXYZDeltaInMilliMeterAndStoreToArray(target,delta); // Calculate Delta X, Y and X in mm and store to delta
+  calculateXYZDeltaInMilliMeterAndStoreToArray(target,delta); // Calculate Delta X, Y and X in mm and store to delta[]
   calculateXYZaxisSteps(block,target);  // Calculate Delta X, Y and X in steps and store to targe[]
   configDirectionBist(block,target);
   block->stepEventCount = getHighestStepsInXYZsteps(block); // To find which the steps of axis is highest
@@ -21,6 +21,7 @@ void planLineBlock(float x, float y, float z, float feedRate, uint8_t InvertFeed
   block->millimeters = getVectorLength(delta);  // Calulate the magnitude of vector. 
   block->inverseMillimeters = getInverse(block->millimeters); // inverse the magnitude of vector.
   estimateNominalRateAndSpeed(block,feedRate,InvertFeedRateMode); // Calculate nominalRate and nominalSpeed
+  setRateDelta(block);
   calculateUnitVectorForXYZaxisAndStoreToArray(block,delta,unitVector); // Calculate XYZ unitVector
   float cosTheta = getCosThetaBetweenTwoVector(plExecutor.previousUnitVec,unitVector);
   entrySpeedPlanning(block,cosTheta);
@@ -29,6 +30,19 @@ void planLineBlock(float x, float y, float z, float feedRate, uint8_t InvertFeed
   replanBlockBufferStructure();
 }
 
+
+/*
+                                   stepEvent (block->stepEventCount)
+                 Acceleration * -------------
+                                 vectorLength (block->millimeters)
+   RateDelta = ----------------------------------
+                      60 sec * _ACCELERATE_TICK_PER_SEC
+
+*/
+void setRateDelta(block_t* block){
+  //printf("%f\n",(block->stepEventCount*block->inverseMillimeters*ACCELERATION)/(60*_ACCELERATE_TICK_PER_SEC));
+  block->rateDelta = _floor((block->stepEventCount*block->inverseMillimeters*ACCELERATION)/(60*_ACCELERATE_TICK_PER_SEC));
+}
 void replanBlockBufferStructure(void){
   uint8_t blockIndex = bufferTail;
   block_t *current;
@@ -48,11 +62,14 @@ void entrySpeedPlanning(block_t* block, float cosTheta){
     block->entrySpeed = MINIMUM_SPEED;
     if(bufferHead != bufferTail){
      if(cosTheta < 0.95){ 
-       block->entrySpeed = min(plExecutor.previousNominalSpeed,block->nominalSpeed);
+       block->entrySpeed = _min(plExecutor.previousNominalSpeed,block->nominalSpeed);
      }
     
     }
+    float AllowableSpeed = maxAllowableSpeed(-ACCELERATION,MINIMUM_SPEED,block->millimeters);
+   block->entrySpeed = _min(block->entrySpeed,AllowableSpeed);
 }
+
 float getCosThetaBetweenTwoVector(float unitVector1[],float unitVector2[]){
   return -(unitVector1[X_AXIS]*unitVector2[X_AXIS] + unitVector1[Y_AXIS]*unitVector2[Y_AXIS] + unitVector1[Z_AXIS]*unitVector2[Z_AXIS]);
 }
@@ -78,13 +95,16 @@ void saveDataToPlExecutor(float nominalSpeed,int32_t target[], float unitVector[
 void blockMovingExecutionPlaning(block_t* block, float entryFactor, float exitFactor){
   block->initialRate = _ceil(block->nominalRate*entryFactor);
   block->finalRate = _ceil(block->nominalRate*exitFactor);
-  
-  int32_t accelStep = _ceil(getRampStep(block->initialRate,block->nominalRate,ACCELERATION*STEP_PER_MM));
-  int32_t deccelStep =_ceil(getRampStep(block->nominalRate,block->finalRate,-ACCELERATION*STEP_PER_MM));
+  int32_t accelerationPerMinute = block->rateDelta*_ACCELERATE_TICK_PER_SEC*60.0;
+  printf("accelerationPerMinute = %d\n",accelerationPerMinute);
+  int32_t accelStep = _ceil(getRampStep(block->initialRate,block->nominalRate,accelerationPerMinute));
+  int32_t deccelStep = _floor(getRampStep(block->nominalRate,block->finalRate,-accelerationPerMinute));
+  printf("accelStep = %d deccelStep = %d\n",accelStep,deccelStep);
   int32_t nominalStep = getNominalStep(block->stepEventCount,accelStep,deccelStep);
   ifNominatStepLessThanZeroRecaculateAccelStep(block,&nominalStep,&accelStep);
   block->accelerateUntil = accelStep;
   block->deccelerateAfter = accelStep+nominalStep;
+  printf("accelerateUntil = %d deccelerateAfter = %d\n",block->accelerateUntil,block->deccelerateAfter);
 }
 
 void ifNominatStepLessThanZeroRecaculateAccelStep(block_t* block,int32_t*nominalStep, int32_t* accelStep){
@@ -105,8 +125,8 @@ void ifNominatStepLessThanZeroRecaculateAccelStep(block_t* block,int32_t*nominal
                        X1 ^X2^                   
                           |  |                   
       intersection_distance  Distance  
-      
-      Distance = X1 + X2
+               
+      Distance = X1(intersection_distance) + X2
       
       X1 = (MaxRate^2 - initialRate^2)/(2*accel)
       X2 = (MaxRate^2 - finalRate^2)/(2*accel)
@@ -132,8 +152,9 @@ float getIntersectionDistance(block_t* block){
   float distance = block->stepEventCount;
   float acceleration = ACCELERATION*STEP_PER_MM;
   float intersectionDistance = ((2*acceleration*distance - initialRate*initialRate + finalRate*finalRate)/(4*acceleration));
-  intersectionDistance = min(intersectionDistance,block->stepEventCount);
-  intersectionDistance = max(intersectionDistance,0);
+  intersectionDistance = _min(intersectionDistance,block->stepEventCount);
+  intersectionDistance = _max(intersectionDistance,0);
+  
   return intersectionDistance;
 }
 
@@ -162,7 +183,7 @@ int32_t getNominalStep(int32_t evenStep, int32_t accelStep, int32_t deccelStep){
      rampStep =  -------------------------  X   -------------------------
                           accel                           2
 
-                nominalRate^2 + initialRate2
+                nominalRate^2 + initialRate^2
      rampStep = ----------------------------
                          2*accel     
 */
@@ -170,6 +191,11 @@ int32_t getNominalStep(int32_t evenStep, int32_t accelStep, int32_t deccelStep){
 
 float getRampStep(float initialRate, float targetRate, float acceleration){
   return( ((targetRate*targetRate)-(initialRate*initialRate))/((float)(2.0*acceleration) ));
+}
+
+float maxAllowableSpeed(float acceleration, float targetVelocity, float distance) 
+{
+  return( sqrt(targetVelocity*targetVelocity-2*acceleration*distance) );
 }
 
 void convertXYZMovingDistanceToStepAndStoreToArray(float x,float y,float z,int32_t target[]){
@@ -201,7 +227,7 @@ uint32_t getXYZDeltaInSteps(int32_t target[],int8_t axis){
 }
 
 int32_t getHighestStepsInXYZsteps(block_t* block){
-   return max(block->steps[X_AXIS],max(block->steps[Y_AXIS],block->steps[Z_AXIS]));
+   return _max(block->steps[X_AXIS],_max(block->steps[Y_AXIS],block->steps[Z_AXIS]));
 }
 
 
@@ -282,6 +308,7 @@ uint32_t _ceil(float num){
 uint32_t _floor(float num){
   return((uint32_t)num);
 }
+// Testing purpose
 void blockConfig(block_t* block, 
                  uint8_t dir,
                  uint32_t stepX, 
@@ -291,7 +318,7 @@ void blockConfig(block_t* block,
                  uint32_t nominalRate,
                  uint32_t finalRate
                  ){
-    block->stepEventCount = max(stepX,max(stepY,stepZ));
+    block->stepEventCount = _max(stepX,_max(stepY,stepZ));
     block->directionBits = dir;
     block->steps[X_AXIS] = stepX;
     block->steps[Y_AXIS] = stepY;

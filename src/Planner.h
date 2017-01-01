@@ -2,7 +2,7 @@
 #define Planner_H
 
 #include "stdint.h"
-#include "math.h"
+#include <math.h>
 #include "stdio.h"
 #include "string.h"
 #include "System.h"
@@ -10,8 +10,8 @@
 #define BLOCK_BUFFER_SIZE 18
 
 
-#define max(a,b) ((a<b)?b:a)
-#define min(a,b) ((a>b)?b:a)
+#define _max(a,b) ((a<b)?b:a)
+#define _min(a,b) ((a>b)?b:a)
 #define _lround(x) (x+0.5)
 // #define _labs(x)  ((x<0)?(-x):x)
 
@@ -74,6 +74,7 @@ void discardCurrentBlock(void);
 void convertXYZMovingDistanceToStepAndStoreToArray(float x,float y,float z,int32_t target[]);
 uint8_t determineDirection(int32_t target[]);
 long int _labs (long int i);
+uint32_t _floor(float num);
 void calculateXYZaxisSteps(block_t* block, int32_t target[]);
 int32_t getHighestStepsInXYZsteps(block_t* block);
 void planLineBlock(float x, float y, float z, float feedRate, uint8_t InvertFeedRateMode);
@@ -98,4 +99,6 @@ float getCosThetaBetweenTwoVector(float unitVector1[],float unitVector2[]);
 void entrySpeedPlanning(block_t* block, float cosTheta);
 float _getCosThetaBetweenTwoVector(float unitVector1[],float unitVector2[]);
 void replanBlockBufferStructure(void);
+void setRateDelta(block_t* block);
+float maxAllowableSpeed(float acceleration, float targetVelocity, float distance);
 #endif // Planner_H

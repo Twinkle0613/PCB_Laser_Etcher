@@ -1,0 +1,31 @@
+---
+:source:
+  :path: test
+  :file: test_Serial.c
+:successes:
+- :test: test_serialCommunicationCentre
+  :line: 119
+  :message: ''
+:failures: []
+:ignores: []
+:counts:
+  :total: 1
+  :passed: 1
+  :failed: 0
+  :ignored: 0
+:stdout:
+- accelerationPerMinute = 7200000
+- accelStep = 69445 deccelStep = 69444
+- accelerateUntil = 69445 deccelerateAfter = 130556
+- ''
+- BaudRate = 9600, ByteSize = 8, Parity = 0, StopBits = 0
+- Serial port COM3 successfully reconfigured.
+- Opening COM3
+- 'Received[14] : RESET Success!'
+- "---------------------------------------------------"
+- InitialRate = 0 NominalRate = 1000000 FinalRate = 0
+- accelerateUntil = 69445 deccelerateAfter = 130556
+- rateDelta = 400 stepEventCount = 200000
+- "---------------------------------------------------"
+- Closing COM3
+- ''

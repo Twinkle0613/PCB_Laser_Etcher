@@ -1,30 +1,30 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <history>
-   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -g2 -Map=PCB_Laser_Etcher.map -O0 --gc-sections --specs=nano.specs -LC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher -TC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher/STM32F103C8_FLASH.ld -g">
-      <target file="PCB_Laser_Etcher.elf" lastModified="158d95d9d33">
-         <source file="..\obj\SystemMap.o" lastModified="158d370ffcd"/>
-         <source file="..\obj\Protocol.o" lastModified="158d95d98ae"/>
-         <source file="..\obj\syscalls.o" lastModified="158d3710582"/>
-         <source file="..\obj\Stepper.o" lastModified="158d948dec4"/>
-         <source file="..\obj\stm32f10x_usart.o" lastModified="158d371046a"/>
-         <source file="..\obj\Tim.o" lastModified="158d94ecd4f"/>
-         <source file="..\obj\Dma.o" lastModified="158d3710500"/>
-         <source file="..\obj\Usart.o" lastModified="158d3aefe89"/>
-         <source file="..\obj\HardwareConfig.o" lastModified="158d37108c3"/>
-         <source file="..\obj\stm32f10x_gpio.o" lastModified="158d3710149"/>
-         <source file="..\obj\stm32f10x_rcc.o" lastModified="158d37103b6"/>
-         <source file="..\obj\Spi.o" lastModified="158d371067b"/>
-         <source file="..\obj\Motor.o" lastModified="158d37107f1"/>
-         <source file="..\obj\stm32f10x_dma.o" lastModified="158d3710711"/>
-         <source file="..\obj\system_stm32f10x.o" lastModified="158d3710059"/>
-         <source file="..\obj\startup_stm32f103xb.o" lastModified="158d371029d"/>
-         <source file="..\obj\Gpio.o" lastModified="158d3710604"/>
-         <source file="..\obj\stm32f10x_tim.o" lastModified="158d370ff87"/>
-         <source file="..\obj\Planner.o" lastModified="158d3710315"/>
-         <source file="..\obj\System.o" lastModified="158d37100a9"/>
-         <source file="..\obj\stm32f10x_spi.o" lastModified="158d371096d"/>
-         <source file="..\obj\misc.o" lastModified="158d371078d"/>
-         <source file="..\obj\main.o" lastModified="158d948dd33"/>
+   <processor signature="arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -g2 -Map=PCB_Laser_Etcher.map -O0 --gc-sections -lm -lgcc -lc -lrdimon -LC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher -TC:/Users/Hwa-Neng/CoIDE/workspace/PCB_Laser_Etcher/STM32F103C8_FLASH.ld -g">
+      <target file="PCB_Laser_Etcher.elf" lastModified="159581ec9c8">
+         <source file="..\obj\Protocol.o" lastModified="159581ec1f9"/>
+         <source file="..\obj\syscalls.o" lastModified="159581eb4fd"/>
+         <source file="..\obj\Stepper.o" lastModified="159581ec476"/>
+         <source file="..\obj\stm32f10x_usart.o" lastModified="159581eb2f6"/>
+         <source file="..\obj\Tim.o" lastModified="159581ec39d"/>
+         <source file="..\obj\Dma.o" lastModified="159581eb3bd"/>
+         <source file="..\obj\Usart.o" lastModified="159581eae09"/>
+         <source file="..\obj\HardwareConfig.o" lastModified="159581ec243"/>
+         <source file="..\obj\stm32f10x_gpio.o" lastModified="159581ea9a6"/>
+         <source file="..\obj\stm32f10x_rcc.o" lastModified="159581eb0e4"/>
+         <source file="..\obj\Setting.o" lastModified="159581eae61"/>
+         <source file="..\obj\Spi.o" lastModified="159581eb627"/>
+         <source file="..\obj\Motor.o" lastModified="159581ec136"/>
+         <source file="..\obj\stm32f10x_dma.o" lastModified="159581eb6bf"/>
+         <source file="..\obj\system_stm32f10x.o" lastModified="159581ea84a"/>
+         <source file="..\obj\startup_stm32f103xb.o" lastModified="159581eaef9"/>
+         <source file="..\obj\Gpio.o" lastModified="159581eb590"/>
+         <source file="..\obj\stm32f10x_tim.o" lastModified="159581ea780"/>
+         <source file="..\obj\Planner.o" lastModified="159581eafc9"/>
+         <source file="..\obj\System.o" lastModified="159581ea8ca"/>
+         <source file="..\obj\stm32f10x_spi.o" lastModified="159581ec2ee"/>
+         <source file="..\obj\misc.o" lastModified="159581eb7f3"/>
+         <source file="..\obj\main.o" lastModified="159581ead53"/>
       </target>
    </processor>
 </history>

@@ -24,6 +24,7 @@ extern char line[256];
 extern uint8_t charCounter;
 int readValue(char* line,uint8_t *charCounter);
 int getLetterAndValue(char* letter, int *value, char* line, uint8_t *charCounter);
-void lineInterpretToBlock(char* line);
+void interpretLineToBlock(char* line);
 void dataProcess(void);
+void lineCheckingProcess(void);
 #endif // Protocol_H
